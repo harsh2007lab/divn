@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Div Manager">
+<meta name="theme-color" content="#16233B">
+<meta name="description" content="Billing, Udhar, Sales aur Stock — sabh ek jagah">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<title>Login — Div Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16233B; --brass:#B8862F;
+  --paper:#F6F4EE; --line:#DCD6C7;
+  --red:#B4432E; --green:#2E7D4F;
+  --shadow:0 4px 20px rgba(22,35,59,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Inter',sans-serif;
+  background:linear-gradient(135deg,#16233B 0%,#243654 100%);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.card{
+  background:#fff;
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  padding:40px;
+  max-width:440px;
+  width:100%;
+  animation:slideUp .4s ease;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── Logo ── */
+.logo{text-align:center;margin-bottom:28px;}
+.logo-icon{font-size:48px;display:block;margin-bottom:10px;}
+.logo-text{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:var(--ink);}
+.logo-text span{color:var(--brass);}
+
+/* ── Tabs ── */
+.tabs{display:flex;background:#F0EDE5;border-radius:10px;padding:4px;margin-bottom:28px;gap:4px;}
+.tab{
+  flex:1;padding:10px;border:none;border-radius:8px;
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;background:transparent;color:#888;
+}
+.tab.active{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(22,35,59,.10);}
+.tab:hover:not(.active){color:var(--ink);}
+
+/* ── Forms ── */
+.form-panel{display:none;}
+.form-panel.active{display:block;}
+.field{margin-bottom:18px;}
+.label{
+  display:block;font-size:12px;font-weight:600;color:var(--ink);
+  margin-bottom:7px;text-transform:uppercase;letter-spacing:0.04em;
+}
+.input{
+  width:100%;padding:12px 14px;border:2px solid var(--line);
+  border-radius:10px;font-size:15px;font-family:'Inter',sans-serif;transition:all .2s;
+}
+.input:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 4px rgba(184,134,47,.12);}
+.hint{font-size:11px;color:#999;margin-top:5px;}
+
+/* ── Button ── */
+.btn{
+  width:100%;padding:13px;background:var(--brass);color:#fff;
+  border:none;border-radius:10px;font-size:15px;font-weight:600;
+  font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;margin-top:6px;
+}
+.btn:hover{background:#a3781f;transform:translateY(-2px);box-shadow:0 6px 20px rgba(184,134,47,.3);}
+.btn:active{transform:translateY(0);}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;}
+
+/* ── Messages ── */
+.msg{
+  padding:11px 14px;border-radius:8px;font-size:13px;
+  margin-bottom:18px;border-left:4px solid;display:none;
+}
+.msg.show{display:block;animation:shake .4s;}
+.msg.error{background:#FBEFEB;color:var(--red);border-color:var(--red);}
+.msg.success{background:#EBF5F0;color:var(--green);border-color:var(--green);}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+
+/* ── Spinner ── */
+.spinner{
+  width:16px;height:16px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;
+  animation:spin .6s linear infinite;
+  display:inline-block;vertical-align:middle;margin-right:6px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── Footer ── */
+.footer{text-align:center;margin-top:22px;font-size:12px;color:#aaa;}
+
+@media(max-width:480px){
+  .card{padding:28px 20px;}
+  .logo-text{font-size:22px;}
+}
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="logo">
+    <span class="logo-icon">🏪</span>
+    <div class="logo-text">Div <span>Manager</span></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" id="tabLogin"    onclick="switchTab('login')">🔑 Login</button>
+    <button class="tab"        id="tabRegister" onclick="switchTab('register')">✨ Register</button>
+  </div>
+
+  <!-- ══════════════ LOGIN PANEL ══════════════ -->
+  <div class="form-panel active" id="panelLogin">
+    <div class="msg error"   id="loginError"></div>
+    <div class="msg success" id="loginSuccess"></div>
+
+    <form id="loginForm" autocomplete="on">
+      <div class="field">
+        <label class="label">Email</label>
+        <input type="email" class="input" id="loginEmail"
+               placeholder="aapka@email.com" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label class="label">Password</label>
+        <input type="password" class="input" id="loginPassword"
+               placeholder="Password enter karo" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn" id="loginBtn">
+        <span id="loginBtnText">Login</span>
+      </button>
+    </form>
+
+    <div class="footer">
+      Account nahi hai?
+      <a href="#" onclick="switchTab('register')" style="color:var(--brass);font-weight:600;">Register karo</a>
+    </div>
+  </div>
+
+  <!-- ══════════════ REGISTER PANEL ══════════════ -->
+  <div class="form-panel" id="panelRegister">
+    <div class="msg error"   id="regError"></div>
+    <div class="msg success" id="regSuccess"></div>
+
+    <form id="registerForm" autocomplete="off">
+      <div class="field">
+        <label class="label">Email</label>
+        <input type="email" class="input" id="regEmail"
+               placeholder="aapka@email.com" required autocomplete="email">
+        <div class="hint">Login ke liye yahi email use hogi</div>
+      </div>
+      <div class="field">
+        <label class="label">Username</label>
+        <input type="text" class="input" id="regUsername"
+               placeholder="Display name (min 3 chars)" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label class="label">Password</label>
+        <input type="password" class="input" id="regPassword"
+               placeholder="Min 6 characters" required autocomplete="new-password">
+      </div>
+      <div class="field">
+        <label class="label">Confirm Password</label>
+        <input type="password" class="input" id="regConfirm"
+               placeholder="Password dobara enter karo" required autocomplete="new-password">
+      </div>
+      <button type="submit" class="btn" id="regBtn">
+        <span id="regBtnText">Account Banao</span>
+      </button>
+    </form>
+
+    <div class="footer">
+      Already account hai?
+      <a href="#" onclick="switchTab('login')" style="color:var(--brass);font-weight:600;">Login karo</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.getElementById('panelLogin').classList.toggle('active',    tab === 'login');
+  document.getElementById('panelRegister').classList.toggle('active', tab === 'register');
+  document.getElementById('tabLogin').classList.toggle('active',      tab === 'login');
+  document.getElementById('tabRegister').classList.toggle('active',   tab === 'register');
+  // Clear messages when switching
+  ['loginError','loginSuccess','regError','regSuccess'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('show');
+    el.textContent = '';
+  });
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className   = `msg ${type} show`;
+}
+function hideMsg(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('show');
+}
+function setLoading(btnId, textId, loading, label) {
+  const btn  = document.getElementById(btnId);
+  const span = document.getElementById(textId);
+  btn.disabled = loading;
+  span.innerHTML = loading
+    ? '<span class="spinner"></span> ' + label
+    : span.dataset.orig || label;
+  if (!loading) span.dataset.orig = label;
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideMsg('loginError'); hideMsg('loginSuccess');
+
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  if (!email || !password) {
+    showMsg('loginError', '❌ Email aur password dono enter karo!', 'error'); return;
+  }
+
+  setLoading('loginBtn', 'loginBtnText', true, 'Login ho raha hai...');
+
+  try {
+    const res  = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showMsg('loginSuccess', '✅ Login successful! Redirect ho raha hai...', 'success');
+      setTimeout(() => { window.location.href = '/'; }, 900);
+    } else {
+      showMsg('loginError', '❌ ' + (data.error || 'Login failed'), 'error');
+      setLoading('loginBtn', 'loginBtnText', false, 'Login');
+    }
+  } catch (err) {
+    showMsg('loginError', '❌ Server se connection nahi. Check karo server chal raha hai.', 'error');
+    setLoading('loginBtn', 'loginBtnText', false, 'Login');
+  }
+});
+
+// ── REGISTER ──────────────────────────────────────────────────────────────────
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideMsg('regError'); hideMsg('regSuccess');
+
+  const email    = document.getElementById('regEmail').value.trim();
+  const username = document.getElementById('regUsername').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const confirm  = document.getElementById('regConfirm').value;
+
+  if (!email || !username || !password || !confirm) {
+    showMsg('regError', '❌ Sab fields fill karo!', 'error'); return;
+  }
+  if (password !== confirm) {
+    showMsg('regError', '❌ Dono passwords match nahi kar rahe!', 'error'); return;
+  }
+  if (password.length < 6) {
+    showMsg('regError', '❌ Password kam se kam 6 characters ka hona chahiye', 'error'); return;
+  }
+  if (username.length < 3) {
+    showMsg('regError', '❌ Username kam se kam 3 characters ka hona chahiye', 'error'); return;
+  }
+
+  setLoading('regBtn', 'regBtnText', true, 'Account ban raha hai...');
+
+  try {
+    const res  = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, username, password })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showMsg('regSuccess', `✅ Account ban gaya, ${data.username}! Redirect ho raha hai...`, 'success');
+      setTimeout(() => { window.location.href = '/'; }, 1000);
+    } else {
+      showMsg('regError', '❌ ' + (data.error || 'Registration failed'), 'error');
+      setLoading('regBtn', 'regBtnText', false, 'Account Banao');
+    }
+  } catch (err) {
+    showMsg('regError', '❌ Server se connection nahi. Check karo server chal raha hai.', 'error');
+    setLoading('regBtn', 'regBtnText', false, 'Account Banao');
+  }
+});
+</script>
+</body>
+</html>

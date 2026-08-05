@@ -1,0 +1,2043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Div Manager">
+<meta name="theme-color" content="#16233B">
+<meta name="description" content="Billing, Udhar, Sales aur Stock — sabh ek jagah">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<title>Div — Business Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16233B;--ink-soft:#3B4A63;
+  --paper:#F6F4EE;--card:#FFFFFF;
+  --brass:#B8862F;--brass-soft:#EFDFBB;
+  --line:#DCD6C7;--green:#2F6B4F;--red:#B4432E;
+  --shadow:0 1px 3px rgba(22,35,59,.07),0 4px 14px rgba(22,35,59,.06);
+  --r:12px;--tr:all .18s cubic-bezier(.4,0,.2,1);
+  --sw:220px;--bnh:62px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+.app{display:flex;min-height:100vh;min-height:100dvh;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sw);flex-shrink:0;background:var(--ink);color:#EDE7D6;display:flex;flex-direction:column;padding:0;position:sticky;top:0;height:100vh;z-index:100;overflow:hidden;}
+.brand{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700;padding:22px 22px 18px;letter-spacing:.2px;border-bottom:1px solid rgba(237,231,214,.12);display:flex;align-items:center;gap:10px;}
+.brand span{color:var(--brass-soft);}
+.sidebar-scroll{overflow-y:auto;flex:1;padding-bottom:8px;}
+.nav-label-sect{font-size:10px;font-weight:700;letter-spacing:.09em;color:rgba(237,231,214,.3);text-transform:uppercase;padding:12px 22px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 22px;font-size:13.5px;font-weight:500;color:#C7C0AC;cursor:pointer;border-left:3px solid transparent;transition:var(--tr);border-radius:0 8px 8px 0;margin-right:8px;user-select:none;}
+.nav-item:hover{color:#EDE7D6;background:rgba(255,255,255,.06);}
+.nav-item.active{color:#fff;background:rgba(184,134,47,.2);border-left-color:var(--brass);font-weight:600;}
+.sidebar-foot{padding:12px 22px;font-size:11px;color:rgba(200,192,172,.45);border-top:1px solid rgba(237,231,214,.08);cursor:pointer;}
+.btn-logout-side{width:calc(100% - 44px);margin:6px 22px 14px;background:rgba(180,67,46,.15);border:1px solid rgba(180,67,46,.3);color:#F4A59A;padding:9px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;transition:var(--tr);}
+.btn-logout-side:hover{background:rgba(180,67,46,.28);}
+
+/* ── MAIN ── */
+.main{flex:1;padding:28px 36px;max-width:1200px;min-width:0;}
+.tab-page{animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.page-title{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;margin:0 0 2px;}
+.page-sub{color:var(--ink-soft);font-size:13.5px;margin:0 0 22px;line-height:1.5;}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;margin-bottom:18px;}
+.card h3{font-family:'Space Grotesk',sans-serif;font-size:15px;margin:0 0 14px;font-weight:600;}
+
+/* ── BUTTONS ── */
+.btn{font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;padding:11px 18px;border-radius:8px;border:1.5px solid transparent;cursor:pointer;transition:var(--tr);display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;white-space:nowrap;user-select:none;text-decoration:none;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--ink);color:#fff;}.btn-primary:hover{background:#243654;}
+.btn-brass{background:var(--brass);color:#fff;box-shadow:0 2px 8px rgba(184,134,47,.25);}.btn-brass:hover{background:#a3781f;}
+.btn-ghost{background:transparent;border-color:var(--line);color:var(--ink);}.btn-ghost:hover{background:#F0EDE3;}
+.btn-danger{background:transparent;color:var(--red);border-color:#E7CFC7;}.btn-danger:hover{background:#FBEFEB;}
+.btn-green{background:#2F6B4F;color:#fff;}.btn-green:hover{background:#255840;}
+.btn:disabled{opacity:.42;cursor:not-allowed;transform:none!important;}
+.btn-sm{padding:7px 13px;font-size:12.5px;min-height:36px;}
+.btn-full{width:100%;}
+
+/* ── INPUTS ── */
+input,select,textarea{font-family:'Inter',sans-serif;font-size:14px;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);width:100%;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;appearance:none;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%233B4A63' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:32px;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 3px rgba(184,134,47,.15);}
+label.lbl{font-size:11.5px;font-weight:700;color:var(--ink-soft);display:block;margin-bottom:6px;letter-spacing:.02em;text-transform:uppercase;}
+.fg{margin-bottom:14px;}
+
+/* ── TABLES ── */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);font-weight:700;padding:10px 12px;border-bottom:2px solid var(--line);white-space:nowrap;}
+td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(246,244,238,.6);}
+
+/* ── STAT CARDS ── */
+.stats-grid{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+.stat-card{flex:1;min-width:140px;border:1px solid var(--line);border-radius:var(--r);padding:16px;transition:var(--tr);background:var(--card);}
+.stat-card:hover{box-shadow:var(--shadow);transform:translateY(-1px);}
+.stat-lbl{font-size:11.5px;color:var(--ink-soft);margin-bottom:6px;font-weight:500;}
+.stat-val{font-size:22px;font-weight:800;line-height:1;}
+.stat-sub{font-size:11px;color:var(--ink-soft);margin-top:4px;}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.bdg-red{background:#FBEFEB;color:var(--red);}
+.bdg-grn{background:#EAF4EE;color:var(--green);}
+.bdg-blue{background:#EBF2FB;color:#1a5fa8;}
+.bdg-brass{background:var(--brass-soft);color:#7A5A18;}
+
+/* ── MISC ── */
+.empty{text-align:center;padding:48px 20px;color:var(--ink-soft);}
+.empty .g{font-size:36px;margin-bottom:12px;display:block;}
+.sr{display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap;}
+.sr input{flex:1;min-width:160px;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.tr-row{display:flex;justify-content:space-between;padding:7px 0;font-size:14px;}
+.tr-row.grand{font-weight:800;font-size:18px;border-top:2px solid var(--line);margin-top:8px;padding-top:12px;}
+.cart-line{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
+.cart-line:last-child{border-bottom:none;}
+.cart-line .nm{flex:1;font-weight:500;}
+.qi{width:58px;text-align:center;padding:6px;}
+.lt{width:76px;text-align:right;font-weight:700;font-size:14px;flex-shrink:0;}
+.spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,.15);border-top-color:var(--ink);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--ink);color:#fff;padding:11px 22px;border-radius:24px;font-size:13.5px;font-weight:500;box-shadow:0 4px 20px rgba(22,35,59,.25);z-index:9999;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:start;}
+
+/* ── PRINT ── */
+#printArea{display:none;}
+@media print{
+  body *{visibility:hidden;}
+  #printArea,#printArea *{visibility:visible;}
+  #printArea{display:block;position:absolute;top:0;left:0;width:100%;}
+  .bottom-nav,.mob-hdr{display:none!important;}
+}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--ink);height:var(--bnh);z-index:200;border-top:1px solid rgba(255,255,255,.08);box-shadow:0 -4px 20px rgba(0,0,0,.2);}
+.bnav-inner{display:flex;height:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.bnav-inner::-webkit-scrollbar{display:none;}
+.bi{flex:0 0 auto;min-width:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:5px 8px;color:rgba(200,192,172,.55);cursor:pointer;transition:var(--tr);border-top:2.5px solid transparent;user-select:none;}
+.bi:active{opacity:.7;}
+.bi.active{color:var(--brass-soft);border-top-color:var(--brass);}
+.bi-icon{font-size:19px;line-height:1;}
+.bi-lbl{font-size:9px;font-weight:600;white-space:nowrap;}
+
+/* ── MOBILE HEADER ── */
+.mob-hdr{display:none;position:sticky;top:0;z-index:150;background:var(--ink);padding:10px 16px;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08);}
+.mob-brand{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#EDE7D6;flex:1;}
+.mob-brand span{color:var(--brass-soft);}
+.mob-page{font-size:11.5px;color:rgba(200,192,172,.7);font-weight:600;}
+
+/* ── EXPORT GRID ── */
+.export-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:14px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){:root{--sw:185px;}.main{padding:22px 24px;}}
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .mob-hdr{display:flex;}
+  .bottom-nav{display:block;}
+  .app{flex-direction:column;}
+  .main{padding:14px 12px;padding-bottom:calc(var(--bnh) + 18px);}
+  .toast{bottom:calc(var(--bnh) + 10px);}
+  .page-title{font-size:20px;}.page-sub{font-size:13px;margin-bottom:14px;}
+  .card{padding:14px;}
+  .tw{margin:0 -12px;border-radius:0;}
+  table{font-size:12.5px;}
+  th{font-size:10px;padding:8px 10px;}
+  td{padding:9px 10px;}
+  .btn{min-height:46px;font-size:14px;}.btn-sm{min-height:36px;font-size:12.5px;}
+  input,select,textarea{font-size:16px!important;}
+  .stats-grid{display:grid!important;grid-template-columns:1fr 1fr;gap:10px;}
+  .stat-card{min-width:0;padding:12px;}.stat-val{font-size:18px;}
+  .two-col{grid-template-columns:1fr!important;gap:12px;}
+  .export-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:400px){
+  .main{padding:10px;padding-bottom:calc(var(--bnh) + 12px);}
+  .stats-grid{grid-template-columns:1fr!important;}
+  .page-title{font-size:18px;}
+  .export-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- MOBILE HEADER -->
+<div class="mob-hdr">
+  <div class="mob-brand">Div <span>Manager</span></div>
+  <div class="mob-page" id="mobPageLbl">New Bill</div>
+  <button onclick="doLogout()" style="background:none;border:1px solid rgba(255,255,255,.2);color:rgba(237,231,214,.7);padding:6px 11px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">🚪 Out</button>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="brand">🏪 Div <span>Manager</span></div>
+  <div class="sidebar-scroll">
+    <div class="nav-label-sect">Billing</div>
+    <div class="nav-item active" data-tab="billing">🧾 <span>New Bill</span></div>
+    <div class="nav-item" data-tab="history">📋 <span>Bill History</span></div>
+    <div class="nav-label-sect">Analytics</div>
+    <div class="nav-item" data-tab="sales">📊 <span>Sales</span></div>
+    <div class="nav-label-sect">Customer Credit</div>
+    <div class="nav-item" data-tab="rpay">💰 <span>Rpay (Udhar)</span></div>
+    <div class="nav-item" data-tab="badpay">🚫 <span>Badpay</span></div>
+    <div class="nav-label-sect">System</div>
+    <div class="nav-item" data-tab="settings">⚙️ <span>Settings</span></div>
+  </div>
+  <div class="sidebar-foot" id="dbBadge" onclick="syncAll()" title="Click to sync">🍃 Checking…</div>
+  <button class="btn-logout-side" onclick="doLogout()">🚪 Logout</button>
+</div>
+
+<div class="main">
+
+<!-- ═══ NEW BILL ═══ -->
+<div class="tab-page" id="page-billing">
+  <div class="page-title">New Bill</div>
+  <div class="page-sub">Items add karo, discount lagao, GST ke saath bill generate karo.</div>
+  <div class="two-col" id="billingGrid">
+    <!-- Left: item entry -->
+    <div class="card">
+      <h3>Items Add Karo</h3>
+      <div class="fg">
+        <label class="lbl">Item Name</label>
+        <input type="text" id="billItemName" placeholder="e.g. Saree, Suit, Kurti…" autocomplete="off" list="catalogSuggest">
+        <datalist id="catalogSuggest"></datalist>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <div style="flex:1;"><label class="lbl">Qty</label><input type="number" id="billItemQty" value="1" min="1"></div>
+        <div style="flex:2;"><label class="lbl">Price / item (₹)</label><input type="number" id="billItemPrice" placeholder="0" min="0" step="any"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button class="btn btn-brass" style="flex:1;" id="addItemBtn">+ Add to Bill</button>
+        <button class="btn btn-ghost btn-sm" id="toggleCatalogBtn" title="Item list se select karo" style="min-height:44px;gap:5px;">📦 Item List</button>
+      </div>
+      <!-- Item Catalog Panel -->
+      <div id="catalogPanel" style="display:none;border:1.5px dashed var(--brass);border-radius:10px;padding:14px;background:#FDFAF4;margin-bottom:4px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+          <div style="font-size:12px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;">📦 Saved Item Catalog</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <input type="text" id="catalogSearch" placeholder="Search items…" style="width:160px;font-size:12.5px;padding:6px 10px;height:32px;">
+            <button class="btn btn-ghost btn-sm" id="openAddCatalogBtn" style="min-height:32px;">+ New Item</button>
+          </div>
+        </div>
+        <!-- Add new catalog item form -->
+        <div id="addCatalogForm" style="display:none;background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:10px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+            <div style="flex:2;min-width:120px;"><label class="lbl" style="margin-bottom:4px;">Item Name *</label><input type="text" id="catNewName" placeholder="Saree, Suit…" style="height:34px;font-size:13px;"></div>
+            <div style="flex:1;min-width:90px;"><label class="lbl" style="margin-bottom:4px;">Default Price (₹)</label><input type="number" id="catNewPrice" placeholder="0" min="0" step="any" style="height:34px;font-size:13px;"></div>
+            <div style="flex:1;min-width:100px;"><label class="lbl" style="margin-bottom:4px;">Unit</label><input type="text" id="catNewUnit" placeholder="Piece, Meter…" style="height:34px;font-size:13px;"></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-brass btn-sm" id="saveCatalogItemBtn" style="min-height:32px;">Save Item</button>
+            <button class="btn btn-ghost btn-sm" id="cancelCatalogItemBtn" style="min-height:32px;">Cancel</button>
+          </div>
+        </div>
+        <!-- Catalog items grid -->
+        <div id="catalogItemsGrid" style="display:flex;flex-wrap:wrap;gap:8px;max-height:220px;overflow-y:auto;padding:2px;"></div>
+        <div id="catalogEmpty" style="display:none;text-align:center;color:var(--ink-soft);font-size:12.5px;padding:16px 0;">
+          Koi saved item nahi. "+ New Item" se add karo.
+        </div>
+      </div>
+      <div style="margin-top:18px;" id="cartWrap"></div>
+    </div>
+    <!-- Right: details + totals -->
+    <div class="card">
+      <h3>Bill Details</h3>
+      <div class="fg"><label class="lbl">Customer Name (optional)</label><input type="text" id="custName" placeholder="Walk-in Customer"></div>
+      <div style="display:flex;gap:10px;margin-bottom:14px;">
+        <div style="flex:1;"><label class="lbl">Phone (optional)</label><input type="tel" id="custPhone" placeholder="9876543210"></div>
+        <div style="flex:1;"><label class="lbl">Customer GSTIN / Aadhaar</label><input type="text" id="custGstAadhar" placeholder="GSTIN or Aadhaar no."></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:14px;">
+        <div style="flex:1;"><label class="lbl">Discount Type</label>
+          <select id="discType"><option value="none">No Discount</option><option value="flat">Flat (₹)</option><option value="pct">Percent (%)</option></select>
+        </div>
+        <div style="flex:1;"><label class="lbl">Value</label><input type="number" id="discVal" placeholder="0" min="0" step="any" disabled></div>
+      </div>
+      <!-- GST Toggle -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 14px;background:var(--paper);border-radius:8px;border:1px solid var(--line);">
+        <label class="lbl" style="margin:0;flex:1;">GST on this bill?</label>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sm" id="gstYesBtn" style="min-height:32px;background:var(--brass);color:#fff;border-color:var(--brass);">✅ Yes (GST)</button>
+          <button class="btn btn-ghost btn-sm" id="gstNoBtn" style="min-height:32px;">❌ No GST</button>
+        </div>
+      </div>
+      <div id="totalsWrap" style="margin-bottom:14px;"></div>
+      <!-- Amount Paid -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 14px;background:#EAF4EE;border-radius:8px;border:1px solid #B9DFC8;">
+        <label class="lbl" style="margin:0;flex:1;color:var(--green);">💵 Amount Paid by Customer (₹)</label>
+        <input type="number" id="amountPaid" placeholder="0" min="0" step="any" style="width:130px;border-color:#B9DFC8;background:#fff;">
+      </div>
+      <!-- Signature option -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <input type="checkbox" id="addSigBox" checked style="width:18px;height:18px;accent-color:var(--brass);flex-shrink:0;">
+        <label for="addSigBox" style="font-size:13px;font-weight:600;cursor:pointer;color:var(--ink);">Bill mein Customer Signature box add karo</label>
+      </div>
+      <button class="btn btn-brass btn-full" id="genBillBtn">🧾 Generate &amp; Print Bill</button>
+      <button class="btn btn-ghost btn-full" id="clearBillBtn" style="margin-top:8px;">🗑️ Clear Bill</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BILL HISTORY ═══ -->
+<div class="tab-page" id="page-history" style="display:none;">
+  <div class="page-title">Bill History</div>
+  <div class="page-sub">Sabhi bills — bill number ya customer name se search karo, print karo, delete karo.</div>
+  <div class="card">
+    <div class="sr">
+      <input type="text" id="histSearch" placeholder="🔍 Bill number ya customer name…" style="flex:1;">
+      <select id="histDateF" style="width:150px;">
+        <option value="">All Time</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+      </select>
+    </div>
+    <div id="historyWrap"></div>
+  </div>
+</div>
+
+<!-- ═══ SALES ═══ -->
+<div class="tab-page" id="page-sales" style="display:none;">
+  <div class="page-title">Sales</div>
+  <div class="page-sub">Year aur month ke hisaab se sales filter karo.</div>
+  <div class="card">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;">
+      <div><label class="lbl">Year</label><select id="salesYr" style="width:120px;"></select></div>
+      <div><label class="lbl">Month</label>
+        <select id="salesMo" style="width:150px;">
+          <option value="">All Months</option>
+          <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+          <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+          <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+          <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+        </select>
+      </div>
+    </div>
+    <div id="salesSumWrap" style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;"></div>
+    <h3>Bills in this period</h3>
+    <div id="salesBillsWrap"></div>
+  </div>
+</div>
+
+
+<!-- ═══ RPAY ═══ -->
+<div class="tab-page" id="page-rpay" style="display:none;">
+  <div class="page-title">Rpay — Customer Udhar</div>
+  <div class="page-sub">Customer ka udhar track karo, payment record karo, WhatsApp pe remind karo.</div>
+  <div class="stats-grid">
+    <div class="stat-card" style="border-left:4px solid var(--red);">
+      <div class="stat-lbl">Total Udhar Given</div><div class="stat-val" id="rpTotalGiven" style="color:var(--red);">₹0.00</div><div class="stat-sub">Sabhi customers ka</div>
+    </div>
+    <div class="stat-card" style="border-left:4px solid var(--green);">
+      <div class="stat-lbl">Total Received</div><div class="stat-val" id="rpTotalRec" style="color:var(--green);">₹0.00</div><div class="stat-sub">Repayments collected</div>
+    </div>
+    <div class="stat-card" style="border-left:4px solid var(--brass);">
+      <div class="stat-lbl">Total Pending</div><div class="stat-val" id="rpTotalPend" style="color:var(--brass);">₹0.00</div><div class="stat-sub">Net pending balance</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-lbl">Active Customers</div><div class="stat-val" id="rpActiveCount">0</div><div class="stat-sub">With pending balance</div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;flex:1;">
+        <div style="flex:1;min-width:180px;"><label class="lbl">Search Customer</label><input type="text" id="rpSearch" placeholder="Name ya phone…"></div>
+        <div style="width:160px;"><label class="lbl">Status</label>
+          <select id="rpStatusF"><option value="all">All</option><option value="pending" selected>Pending</option><option value="settled">Settled</option></select>
+        </div>
+      </div>
+      <button class="btn btn-brass" id="openAddRpBtn">+ Add Customer Udhar</button>
+    </div>
+  </div>
+  <!-- Add Udhar -->
+  <div class="card" id="addRpCard" style="display:none;border:2px solid var(--brass);">
+    <h3>Naya Udhar Record</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px;">
+      <div><label class="lbl">Customer Name *</label><input type="text" id="rpCustName" placeholder="Ramesh Kumar" list="rpSug"><datalist id="rpSug"></datalist></div>
+      <div><label class="lbl">Mobile Number</label><input type="tel" id="rpCustPhone" placeholder="9876543210"></div>
+      <div><label class="lbl">Udhar Amount (₹) *</label><input type="number" id="rpAmount" placeholder="2500" min="1" step="any"></div>
+      <div><label class="lbl">Date *</label><input type="date" id="rpDate"></div>
+    </div>
+    <div style="margin-bottom:16px;"><label class="lbl">Items / Note (optional)</label><input type="text" id="rpNotes" placeholder="e.g. 2 Suits, 1 Saree"></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-brass" id="saveRpBtn">Save Udhar</button>
+      <button class="btn btn-ghost" id="cancelRpBtn">Cancel</button>
+    </div>
+  </div>
+  <!-- Record Payment -->
+  <div class="card" id="rpPayCard" style="display:none;border:2px solid var(--green);background:#F7FCF9;">
+    <h3>Payment Record Karo</h3>
+    <div id="rpPayHeader" style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:8px;border:1px solid var(--line);"></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:16px;">
+      <div><label class="lbl">Payment Date *</label><input type="date" id="rpPayDate"></div>
+      <div><label class="lbl">Amount (₹) *</label><input type="number" id="rpPayAmt" placeholder="1000" min="1" step="any"></div>
+      <div><label class="lbl">Payment Mode</label>
+        <select id="rpPayMode">
+          <option value="Cash">💵 Cash</option>
+          <option value="UPI">📱 UPI / GPay / PhonePe</option>
+          <option value="Bank Transfer">🏦 Bank Transfer</option>
+          <option value="Card">💳 Card</option>
+          <option value="Cheque">📄 Cheque</option>
+        </select>
+      </div>
+      <div><label class="lbl">Reference / Note</label><input type="text" id="rpPayNote" placeholder="UPI Ref #12345"></div>
+    </div>
+    <div id="rpPayPreview" style="margin-bottom:16px;font-size:14px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-primary" id="saveRpPayBtn">Confirm Payment</button>
+      <button class="btn btn-ghost" id="cancelRpPayBtn">Cancel</button>
+    </div>
+  </div>
+  <div class="card"><h3>Customer Udhar Accounts</h3><div id="rpListWrap"></div></div>
+</div>
+
+<!-- ═══ BADPAY ═══ -->
+<div class="tab-page" id="page-badpay" style="display:none;">
+  <div class="page-title">Badpay — Defaulters</div>
+  <div class="page-sub">Vo customers jinse paise milna mushkil hai — Rpay se "Bad+" karke ya manually add karo.</div>
+  <div class="stats-grid">
+    <div class="stat-card" style="border-left:4px solid var(--red);">
+      <div class="stat-lbl">Total Badpay Udhar</div><div class="stat-val" id="bpTotalGiven" style="color:var(--red);">₹0.00</div><div class="stat-sub">Sabhi defaulters ka</div>
+    </div>
+    <div class="stat-card" style="border-left:4px solid var(--green);">
+      <div class="stat-lbl">Total Received</div><div class="stat-val" id="bpTotalRec" style="color:var(--green);">₹0.00</div><div class="stat-sub">Jo mila badpay se</div>
+    </div>
+    <div class="stat-card" style="border-left:4px solid #B4432E;">
+      <div class="stat-lbl">Total Pending</div><div class="stat-val" id="bpTotalPend" style="color:#B4432E;">₹0.00</div><div class="stat-sub">Net dobuki balance</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-lbl">Defaulters</div><div class="stat-val" id="bpActiveCount">0</div><div class="stat-sub">Active defaulters</div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;flex:1;">
+        <div style="flex:1;min-width:180px;"><label class="lbl">Search</label><input type="text" id="bpSearch" placeholder="Name ya phone…"></div>
+        <div style="width:160px;"><label class="lbl">Status</label>
+          <select id="bpStatusF"><option value="all">All</option><option value="pending" selected>Pending</option><option value="settled">Settled</option></select>
+        </div>
+      </div>
+      <button class="btn btn-danger" id="openAddBpBtn" style="background:#B4432E;color:#fff;border-color:#B4432E;">+ Add Defaulter</button>
+    </div>
+  </div>
+  <!-- Add Badpay -->
+  <div class="card" id="addBpCard" style="display:none;border:2px solid #B4432E;">
+    <h3>Naya Badpay Record</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px;">
+      <div><label class="lbl">Customer Name *</label><input type="text" id="bpCustName" placeholder="Ramesh Kumar"></div>
+      <div><label class="lbl">Mobile Number</label><input type="tel" id="bpCustPhone" placeholder="9876543210"></div>
+      <div><label class="lbl">Udhar Amount (₹) *</label><input type="number" id="bpAmount" placeholder="2500" min="1" step="any"></div>
+      <div><label class="lbl">Date *</label><input type="date" id="bpDate"></div>
+    </div>
+    <div style="margin-bottom:16px;"><label class="lbl">Items / Note (optional)</label><input type="text" id="bpNotes" placeholder="Kya diya tha, kab se udhar hai…"></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn" style="background:#B4432E;color:#fff;" id="saveBpBtn">Save Defaulter</button>
+      <button class="btn btn-ghost" id="cancelBpBtn">Cancel</button>
+    </div>
+  </div>
+  <!-- Record Badpay Payment -->
+  <div class="card" id="bpPayCard" style="display:none;border:2px solid var(--green);background:#F7FCF9;">
+    <h3>Payment Record Karo</h3>
+    <div id="bpPayHeader" style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:8px;border:1px solid var(--line);"></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:16px;">
+      <div><label class="lbl">Payment Date *</label><input type="date" id="bpPayDate"></div>
+      <div><label class="lbl">Amount (₹) *</label><input type="number" id="bpPayAmt" placeholder="1000" min="1" step="any"></div>
+      <div><label class="lbl">Payment Mode</label>
+        <select id="bpPayMode">
+          <option value="Cash">💵 Cash</option>
+          <option value="UPI">📱 UPI / GPay / PhonePe</option>
+          <option value="Bank Transfer">🏦 Bank Transfer</option>
+          <option value="Card">💳 Card</option>
+          <option value="Cheque">📄 Cheque</option>
+        </select>
+      </div>
+      <div><label class="lbl">Reference / Note</label><input type="text" id="bpPayNote" placeholder="UPI Ref #12345"></div>
+    </div>
+    <div id="bpPayPreview" style="margin-bottom:16px;font-size:14px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-primary" id="saveBpPayBtn">Confirm Payment</button>
+      <button class="btn btn-ghost" id="cancelBpPayBtn">Cancel</button>
+    </div>
+  </div>
+  <div class="card"><h3>Defaulter Accounts</h3><div id="bpListWrap"></div></div>
+</div>
+
+<!-- ═══ SETTINGS ═══ -->
+<div class="tab-page" id="page-settings" style="display:none;">
+  <div class="page-title">Settings</div>
+  <div class="page-sub">Shop info, export data, aur system management.</div>
+
+  <div class="card" style="max-width:480px;">
+    <h3>🏪 Shop Information</h3>
+    <div class="fg"><label class="lbl">Business Name</label><input type="text" id="setBizName" placeholder="e.g. Sharma Cloth Store"></div>
+    <div class="fg"><label class="lbl">Address / Phone</label><input type="text" id="setBizAddr" placeholder="Main Market, Jaipur — 9876543210"></div>
+    <div class="fg"><label class="lbl">GSTIN (optional)</label><input type="text" id="setBizGstin" placeholder="09ABCDE1234F1Z5"></div>
+    <div class="fg">
+      <label class="lbl">Default GST Rate (%)</label>
+      <input type="number" id="setGstRate" placeholder="3" step="0.01">
+      <div style="font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.5;">Sell prices are GST-inclusive — bill mein CGST/SGST auto split hoga. <strong>0 rakhne par bill mein GST show nahi hoga.</strong></div>
+    </div>
+
+    <!-- Logo Upload -->
+    <div class="fg">
+      <label class="lbl">Shop Logo (Bill mein dikhega)</label>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <div id="logoPreviewWrap" style="display:none;">
+          <img id="logoPreview" style="height:56px;border-radius:6px;border:1px solid var(--line);object-fit:contain;background:#f9f9f9;padding:4px;">
+        </div>
+        <div style="flex:1;">
+          <label for="logoUploadInput" class="btn btn-ghost btn-sm" style="cursor:pointer;min-height:36px;display:inline-flex;align-items:center;gap:6px;">
+            🖼️ Upload Logo
+          </label>
+          <input type="file" id="logoUploadInput" accept="image/*" style="display:none;">
+          <button class="btn btn-danger btn-sm" id="removeLogoBtn" style="display:none;min-height:36px;margin-left:6px;">✕ Remove</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-soft);margin-top:6px;">PNG/JPG — bill ke top-left corner mein dikhega.</div>
+    </div>
+
+    <button class="btn btn-primary" id="saveSettBtn">💾 Save Settings</button>
+  </div>
+
+  <div class="card" style="max-width:620px;">
+    <h3>📤 Export Data (Offline Backup)</h3>
+    <div style="font-size:13px;color:var(--ink-soft);margin-bottom:16px;line-height:1.6;">
+      Apna poora data download karo — kisi bhi device pe open kar sakte ho. Data sirf aapke paas rahega, server pe nahi jayega.
+    </div>
+    <div class="export-grid">
+      <button class="btn btn-brass" id="expJsonBtn">📥 Full Backup (JSON)</button>
+      <button class="btn btn-green" id="expBillsCsvBtn">📊 Bills CSV (Excel)</button>
+      <button class="btn btn-green" id="expRpayCsvBtn">💰 Rpay / Udhar CSV</button>
+      <button class="btn btn-ghost" id="expBillsPdfBtn">🖨️ Bills PDF Report</button>
+    </div>
+  </div>
+
+  <div class="card" style="max-width:480px;">
+    <h3>📥 Import / Restore Backup</h3>
+    <div style="font-size:13px;color:var(--ink-soft);margin-bottom:14px;line-height:1.6;">
+      Pehle export kiya hua JSON file upload karo — data restore ho jayega.
+    </div>
+    <button class="btn btn-ghost" id="impJsonBtn">📤 Import JSON Backup</button>
+    <input type="file" id="impJsonInput" accept=".json" style="display:none;">
+  </div>
+
+  <!-- ═══ DATA MIGRATION ═══ -->
+  <div class="card" style="max-width:680px;border:2px solid var(--brass);">
+    <h3>🚀 Data Migration — Doosre Software Pe Jaana</h3>
+    <div style="font-size:13px;color:var(--ink-soft);margin-bottom:18px;line-height:1.7;">
+      Marg, Tally, Vyapar, ya kisi bhi accounting software mein data le jaana ho to neeche ke exports use karo. Har format alag software ke liye optimize hai.
+    </div>
+
+    <!-- Steps -->
+    <div style="background:#FDFAF4;border:1px solid var(--brass-soft);border-radius:10px;padding:14px 18px;margin-bottom:18px;">
+      <div style="font-size:11px;font-weight:700;color:var(--brass);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">📋 Migration Steps</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;">
+          <span style="background:var(--brass);color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">1</span>
+          <span><strong>Full Backup (JSON)</strong> lo — ye Div ka native format hai, wapas restore bhi kar sakte ho</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;">
+          <span style="background:var(--brass);color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">2</span>
+          <span>Naye software ke hisaab se <strong>CSV ya Excel file download karo</strong> neeche se</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;">
+          <span style="background:var(--brass);color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">3</span>
+          <span>CSV file naye software mein <strong>Import / Upload</strong> karo (columns manually map karne pad sakte hain)</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;">
+          <span style="background:var(--brass);color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">4</span>
+          <span>Hindi names ke liye <strong>Excel (UTF-8 BOM)</strong> wala format use karo — seedha Excel mein khulega</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export buttons grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:18px;">
+
+      <!-- Bills -->
+      <div style="background:var(--paper);border-radius:10px;padding:12px;border:1px solid var(--line);">
+        <div style="font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">🧾 Bills / Invoices</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button class="btn btn-primary btn-sm" id="migBillsExcelBtn">📊 Excel (UTF-8) — Marg/Vyapar</button>
+          <button class="btn btn-ghost btn-sm" id="migBillsDetailBtn">📋 Bills Detail CSV (item-wise)</button>
+        </div>
+      </div>
+
+      <!-- Udhar / Rpay -->
+      <div style="background:var(--paper);border-radius:10px;padding:12px;border:1px solid var(--line);">
+        <div style="font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">💰 Udhar (Rpay)</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button class="btn btn-brass btn-sm" id="migRpayExcelBtn">📊 Rpay Excel (UTF-8)</button>
+          <button class="btn btn-ghost btn-sm" id="migRpayPaymentsBtn">📋 Payment Transactions CSV</button>
+        </div>
+      </div>
+
+      <!-- Badpay -->
+      <div style="background:var(--paper);border-radius:10px;padding:12px;border:1px solid var(--line);">
+        <div style="font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">🚫 Badpay / Defaulters</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button class="btn btn-danger btn-sm" id="migBadpayExcelBtn" style="background:#B4432E;color:#fff;border-color:#B4432E;">📊 Badpay Excel (UTF-8)</button>
+          <button class="btn btn-ghost btn-sm" id="migBadpayPaymentsBtn">📋 Badpay Transactions CSV</button>
+        </div>
+      </div>
+
+      <!-- Catalog -->
+      <div style="background:var(--paper);border-radius:10px;padding:12px;border:1px solid var(--line);">
+        <div style="font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">📦 Item Catalog</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button class="btn btn-ghost btn-sm" id="migCatalogBtn">📋 Catalog CSV</button>
+          <button class="btn btn-ghost btn-sm" id="migCopyJsonBtn">📋 Copy JSON to Clipboard</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Software-specific note -->
+    <div style="background:#EBF2FB;border-radius:8px;padding:12px 16px;font-size:12.5px;color:#1a5fa8;line-height:1.7;border:1px solid #C5D9F0;">
+      <strong>💡 Software-specific tips:</strong><br>
+      • <strong>Marg / Vyapar:</strong> "Bills Excel (UTF-8)" file lo → Import → Voucher Entry / Sales Register mein upload karo<br>
+      • <strong>Tally:</strong> CSV se directly import nahi hota — pehle Excel mein open karo, phir Tally's XML/CSV importer use karo<br>
+      • <strong>Excel / Google Sheets:</strong> UTF-8 wali file seedha open karo — Hindi text sahi dikhega<br>
+      • <strong>Kisi bhi software mein:</strong> JSON backup lo → unke support se custom migration script banwa sakte ho
+    </div>
+  </div>
+
+  <div class="card" style="max-width:480px;">
+    <h3>� Import / Restore Backup</h3>
+    <div style="font-size:13px;color:var(--ink-soft);margin-bottom:14px;line-height:1.6;">
+      Pehle export kiya hua JSON file upload karo — data restore ho jayega.
+    </div>
+    <button class="btn btn-ghost" id="impJsonBtn">📤 Import JSON Backup</button>
+    <input type="file" id="impJsonInput" accept=".json" style="display:none;">
+  </div>
+
+  <!-- ═══ INSTALL APP (PWA) ═══ -->
+  <div class="card" style="max-width:480px;border:2px solid var(--brass);">
+    <h3>📲 App Install Karo — Mobile & Desktop</h3>
+    <div style="font-size:13px;color:var(--ink-soft);margin-bottom:16px;line-height:1.7;">
+      Div Manager ko apne phone ya computer pe <strong>seedha install karo</strong> — bilkul kisi bhi app jaisa. Internet nahi hai tab bhi kaam karta hai.
+    </div>
+
+    <!-- Install button — JS se show/hide hoga -->
+    <div id="pwaInstallWrap">
+      <button class="btn btn-brass btn-full" id="pwaInstallBtn" style="display:none;margin-bottom:12px;">
+        📲 Install Div Manager App
+      </button>
+
+      <!-- Already installed state -->
+      <div id="pwaInstalledMsg" style="display:none;padding:12px 16px;background:#EAF4EE;border-radius:8px;border:1px solid #B9DFC8;font-size:13px;color:var(--green);font-weight:600;margin-bottom:12px;">
+        ✅ App already install hai! Home screen pe dekho.
+      </div>
+
+      <!-- Fallback manual instructions (shown when prompt not available) -->
+      <div id="pwaManualWrap" style="display:none;">
+        <div style="background:var(--paper);border-radius:10px;padding:14px;border:1px solid var(--line);">
+          <div style="font-weight:700;font-size:13px;margin-bottom:10px;">Manual Install kaise karein:</div>
+          <div id="pwaManualIos" style="display:none;">
+            <div style="font-size:12.5px;line-height:1.8;color:var(--ink-soft);">
+              <strong style="color:var(--ink);">iPhone / iPad (Safari):</strong><br>
+              1. Safari mein yeh page kholo<br>
+              2. Neeche <strong>Share button</strong> (↑) dabao<br>
+              3. <strong>"Add to Home Screen"</strong> select karo<br>
+              4. "Add" dabao — ho gaya! 🎉
+            </div>
+          </div>
+          <div id="pwaManualAndroid" style="display:none;">
+            <div style="font-size:12.5px;line-height:1.8;color:var(--ink-soft);">
+              <strong style="color:var(--ink);">Android (Chrome):</strong><br>
+              1. Chrome mein yeh page kholo<br>
+              2. Upar teen dots (⋮) dabao<br>
+              3. <strong>"Add to Home screen"</strong> ya <strong>"Install app"</strong> select karo<br>
+              4. "Install" dabao — ho gaya! 🎉
+            </div>
+          </div>
+          <div id="pwaManualDesktop" style="display:none;">
+            <div style="font-size:12.5px;line-height:1.8;color:var(--ink-soft);">
+              <strong style="color:var(--ink);">Desktop (Chrome / Edge):</strong><br>
+              1. Address bar ke right side mein <strong>install icon (⊕)</strong> dikhai dega<br>
+              2. Usse click karo aur "Install" dabao<br>
+              3. App shortcut desktop pe aa jayega 🎉
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:11.5px;color:var(--ink-soft);margin-top:10px;line-height:1.6;">
+      � <strong>Kaam karta hai:</strong> Android, iPhone, iPad, Windows (Chrome/Edge), Mac (Chrome)
+    </div>
+  </div>
+
+  <div class="card" style="max-width:480px;">
+    <h3>�🗄️ MongoDB Status</h3>
+    <div id="settDbStatus" style="font-size:13px;margin-bottom:14px;">Checking…</div>
+    <button class="btn btn-ghost btn-sm" onclick="syncAll()">🔄 Force Sync All Data</button>
+  </div>
+</div>
+
+</div><!-- end .main -->
+</div><!-- end .app -->
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="bnav-inner">
+    <div class="bi active" data-tab="billing"><span class="bi-icon">🧾</span><span class="bi-lbl">New Bill</span></div>
+    <div class="bi" data-tab="history"><span class="bi-icon">📋</span><span class="bi-lbl">History</span></div>
+    <div class="bi" data-tab="sales"><span class="bi-icon">📊</span><span class="bi-lbl">Sales</span></div>
+    <div class="bi" data-tab="rpay"><span class="bi-icon">💰</span><span class="bi-lbl">Rpay</span></div>
+    <div class="bi" data-tab="badpay"><span class="bi-icon">🚫</span><span class="bi-lbl">Badpay</span></div>
+    <div class="bi" data-tab="settings"><span class="bi-icon">⚙️</span><span class="bi-lbl">Settings</span></div>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+<div id="printArea"></div>
+
+
+<script>
+// ══ HELPERS ══
+const $  = id => document.getElementById(id);
+const uid = () => 'b'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const fmtM = n  => '₹'+Number(n||0).toFixed(2);
+const esc  = s  => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const today= ()  => new Date().toISOString().split('T')[0];
+const fmtD = s  => { try{ return new Date(s).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }catch(e){ return s||'—'; }};
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+
+// ══ API HELPERS ══
+async function apiGet(url){
+  const r = await fetch(url);
+  if(r.status===401){ location.href='/'; throw new Error('401'); }
+  return r.json();
+}
+async function apiPost(url, body){
+  const r = await fetch(url,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  if(r.status===401){ location.href='/'; throw new Error('401'); }
+  return r.json();
+}
+async function setData(key, value){
+  try{ await apiPost('/api/data/'+key, {data:value}); }
+  catch(e){ if(e.message!=='401') console.warn('[setData]',key,e.message); }
+}
+async function syncAll(){
+  try{
+    const res = await apiPost('/api/sync', { allData:{ bills, rpay, badpay, catalog, bizInfo } });
+    toast(res.success ? '✅ All data synced to MongoDB!' : '❌ Sync failed');
+  }catch(e){ if(e.message!=='401') toast('Sync error: server unreachable'); }
+}
+
+// ══ STATE ══
+let bills=[], rpay=[], bizInfo={name:'My Shop',addr:'',gstin:'',gstRate:3,logo:''}, cart=[];
+let activeRpId=null;
+let billGstEnabled=true; // GST toggle per bill
+let badpay=[];
+let activeBpId=null;
+let catalog=[]; // [{id, name, price, unit}]
+
+// ══ GST TOGGLE ══
+function updateGstToggleUI(){
+  const yes=$('gstYesBtn'), no=$('gstNoBtn');
+  if(!yes||!no) return;
+  if(billGstEnabled){
+    yes.className='btn btn-sm'; yes.style.cssText='min-height:32px;background:var(--brass);color:#fff;border-color:var(--brass);';
+    no.className='btn btn-ghost btn-sm'; no.style.cssText='min-height:32px;';
+  } else {
+    yes.className='btn btn-ghost btn-sm'; yes.style.cssText='min-height:32px;';
+    no.className='btn btn-sm'; no.style.cssText='min-height:32px;background:#B4432E;color:#fff;border-color:#B4432E;';
+  }
+  renderTotals();
+}
+$('gstYesBtn')?.addEventListener('click',()=>{ billGstEnabled=true;  updateGstToggleUI(); });
+$('gstNoBtn')?.addEventListener('click', ()=>{ billGstEnabled=false; updateGstToggleUI(); });
+
+// ══ DB STATUS ══
+async function checkDb(){
+  const badge=$('dbBadge'), sb=$('settDbStatus');
+  try{
+    const d=await(await fetch('/api/status')).json();
+    const ok=d.mongodb==='connected';
+    if(badge){ badge.textContent=ok?'🍃 MongoDB Connected':'🟠 DB Disconnected'; badge.style.color=ok?'#79D69F':'#F5B041'; }
+    if(sb){ sb.innerHTML=ok?'<span style="color:var(--green);font-weight:600;">✅ Connected</span>':'<span style="color:var(--red);">❌ Not connected</span>'; }
+  }catch(e){ if(badge){ badge.textContent='🔴 Server Down'; badge.style.color='#F5B041'; } }
+}
+
+// ══ LOGOUT ══
+async function doLogout(){
+  if(!confirm('Logout karna chahte ho?')) return;
+  try{ await fetch('/api/logout',{method:'POST'}); }catch(e){}
+  location.href='/';
+}
+
+// ══ TAB NAV ══
+const TAB_LABELS={billing:'New Bill',history:'Bill History',sales:'Sales',rpay:'Rpay (Udhar)',badpay:'Badpay',settings:'Settings'};
+function showTab(tab){
+  document.querySelectorAll('.tab-page').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.nav-item,.bi').forEach(n=>n.classList.remove('active'));
+  const pg=$('page-'+tab); if(pg) pg.style.display='block';
+  document.querySelectorAll(`[data-tab="${tab}"]`).forEach(e=>e.classList.add('active'));
+  const ml=$('mobPageLbl'); if(ml) ml.textContent=TAB_LABELS[tab]||tab;
+  if(window.innerWidth<=768) window.scrollTo({top:0,behavior:'smooth'});
+  if(tab==='history')  renderHistory();
+  if(tab==='sales')    renderSales();
+  if(tab==='rpay')     renderRpay();
+  if(tab==='badpay')   renderBadpay();
+  if(tab==='settings') loadSettings();
+}
+document.querySelectorAll('.nav-item,.bi').forEach(el=>el.addEventListener('click',()=>showTab(el.dataset.tab)));
+
+// ══ CART ══
+function renderCart(){
+  const wrap=$('cartWrap'); if(!wrap) return;
+  if(!cart.length){ wrap.innerHTML='<div style="text-align:center;color:var(--ink-soft);padding:24px 0;font-size:13px;">Abhi koi item nahi.</div>'; renderTotals(); return; }
+  wrap.innerHTML=cart.map((it,i)=>`
+    <div class="cart-line">
+      <div class="nm">${esc(it.name)}</div>
+      <input class="qi" type="number" value="${it.qty}" min="1" data-i="${i}">
+      <div style="font-size:12px;color:var(--ink-soft);width:72px;text-align:right;">× ${fmtM(it.price)}</div>
+      <div class="lt">${fmtM(it.qty*it.price)}</div>
+      <button data-del="${i}" style="background:none;border:none;cursor:pointer;font-size:17px;color:var(--red);padding:4px 6px;">✕</button>
+    </div>`).join('');
+  wrap.querySelectorAll('.qi').forEach(el=>el.addEventListener('change',e=>{ cart[+e.target.dataset.i].qty=Math.max(1,+e.target.value||1); renderCart(); }));
+  wrap.querySelectorAll('[data-del]').forEach(el=>el.addEventListener('click',e=>{ cart.splice(+e.target.dataset.del,1); renderCart(); }));
+  renderTotals();
+}
+function renderTotals(){
+  const w=$('totalsWrap'); if(!w) return;
+  const sub=cart.reduce((s,it)=>s+it.qty*it.price,0);
+  const dt=$('discType')?.value||'none', dv=+($('discVal')?.value)||0;
+  let disc=0;
+  if(dt==='flat') disc=Math.min(dv,sub);
+  if(dt==='pct')  disc=sub*(Math.min(dv,100)/100);
+  const total=sub-disc;
+  const gr=+bizInfo.gstRate||0;
+  const showGst = billGstEnabled && gr>0;
+  const tax = showGst ? total/(1+gr/100) : total;
+  const gst  = showGst ? total-tax : 0;
+  let h=`<div class="tr-row"><span>Subtotal</span><span>${fmtM(sub)}</span></div>`;
+  if(disc>0) h+=`<div class="tr-row"><span style="color:var(--green);">Discount</span><span style="color:var(--green);">− ${fmtM(disc)}</span></div>`;
+  if(showGst){
+    h+=`<div class="tr-row" style="font-size:12px;color:var(--ink-soft);"><span>Taxable (excl. GST ${gr}%)</span><span>${fmtM(tax)}</span></div>`;
+    h+=`<div class="tr-row" style="font-size:12px;color:var(--ink-soft);"><span>CGST ${gr/2}% + SGST ${gr/2}%</span><span>${fmtM(gst)}</span></div>`;
+  } else {
+    h+=`<div class="tr-row" style="font-size:12px;color:var(--ink-soft);"><span style="color:var(--red);">GST: Not Applied</span><span></span></div>`;
+  }
+  h+=`<div class="tr-row grand"><span>Total</span><span>${fmtM(total)}</span></div>`;
+  // Amount paid & balance
+  const paid=+($('amountPaid')?.value)||0;
+  if(paid>0){
+    const bal=total-paid;
+    h+=`<div class="tr-row" style="color:var(--green);font-weight:700;"><span>💵 Amount Paid</span><span>${fmtM(paid)}</span></div>`;
+    h+=`<div class="tr-row" style="font-weight:800;font-size:15px;color:${bal<=0?'var(--green)':'var(--red)'};border-top:1px dashed var(--line);padding-top:8px;margin-top:4px;"><span>${bal<=0?'✅ Change Return':'⚠️ Balance Due'}</span><span>${fmtM(Math.abs(bal))}</span></div>`;
+  }
+  w.innerHTML=h;
+}
+
+$('addItemBtn').addEventListener('click',()=>{
+  const nm=$('billItemName').value.trim(), qty=Math.max(1,+$('billItemQty').value||1), pr=+$('billItemPrice').value||0;
+  if(!nm){ toast('Item naam likho'); return; }
+  if(pr<=0){ toast('Price zaroori hai'); return; }
+  const ex=cart.find(c=>c.name.toLowerCase()===nm.toLowerCase());
+  if(ex) ex.qty+=qty; else cart.push({name:nm,qty,price:pr});
+  $('billItemName').value=''; $('billItemQty').value='1'; $('billItemPrice').value='';
+  $('billItemName').focus(); renderCart();
+});
+$('billItemPrice').addEventListener('keydown',e=>{ if(e.key==='Enter') $('addItemBtn').click(); });
+
+// ══ ITEM CATALOG ══
+function renderCatalog(){
+  const grid=$('catalogItemsGrid'), empty=$('catalogEmpty'), sug=$('catalogSuggest');
+  if(!grid) return;
+  const q=($('catalogSearch')?.value||'').toLowerCase().trim();
+  const filtered=catalog.filter(c=>!q||c.name.toLowerCase().includes(q));
+  // Update datalist suggestions
+  if(sug) sug.innerHTML=catalog.map(c=>`<option value="${esc(c.name)}">`).join('');
+  if(!filtered.length){
+    grid.innerHTML=''; if(empty) empty.style.display='block'; return;
+  }
+  if(empty) empty.style.display='none';
+  grid.innerHTML=filtered.map(c=>`
+    <div style="border:1.5px solid var(--line);border-radius:8px;padding:8px 12px;background:#fff;display:flex;flex-direction:column;gap:4px;min-width:110px;max-width:160px;cursor:pointer;transition:border-color .15s;" class="cat-item" data-id="${c.id}">
+      <div style="font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(c.name)}</div>
+      <div style="font-size:12px;color:var(--brass);font-weight:700;">${fmtM(c.price)}</div>
+      ${c.unit?`<div style="font-size:11px;color:var(--ink-soft);">${esc(c.unit)}</div>`:''}
+      <div style="display:flex;gap:4px;margin-top:2px;">
+        <button class="btn btn-brass btn-sm cat-add-btn" data-id="${c.id}" style="flex:1;min-height:26px;padding:4px 8px;font-size:11px;">+ Add</button>
+        <button class="btn btn-danger btn-sm cat-del-btn" data-id="${c.id}" style="min-height:26px;padding:4px 6px;font-size:11px;" title="Delete">✕</button>
+      </div>
+    </div>`).join('');
+  grid.querySelectorAll('.cat-add-btn').forEach(btn=>btn.addEventListener('click',e=>{
+    e.stopPropagation();
+    const c=catalog.find(x=>x.id===btn.dataset.id); if(!c) return;
+    $('billItemName').value=c.name;
+    $('billItemPrice').value=c.price;
+    $('billItemQty').value='1';
+    $('billItemQty').focus();
+    toast(`"${c.name}" — price set! Qty adjust karo aur Add karo.`);
+  }));
+  grid.querySelectorAll('.cat-del-btn').forEach(btn=>btn.addEventListener('click', async e=>{
+    e.stopPropagation();
+    const c=catalog.find(x=>x.id===btn.dataset.id); if(!c) return;
+    if(!confirm(`"${c.name}" catalog se delete karein?`)) return;
+    catalog=catalog.filter(x=>x.id!==c.id);
+    await setData('catalog',catalog); renderCatalog(); toast(`"${c.name}" deleted from catalog`);
+  }));
+}
+$('toggleCatalogBtn')?.addEventListener('click',()=>{
+  const p=$('catalogPanel');
+  const visible=p.style.display!=='none';
+  p.style.display=visible?'none':'block';
+  $('toggleCatalogBtn').textContent=visible?'📦 Item List':'✕ Close List';
+  if(!visible) renderCatalog();
+});
+$('catalogSearch')?.addEventListener('input',renderCatalog);
+$('openAddCatalogBtn')?.addEventListener('click',()=>{
+  $('addCatalogForm').style.display='block'; $('catNewName').focus();
+});
+$('cancelCatalogItemBtn')?.addEventListener('click',()=>{
+  $('addCatalogForm').style.display='none';
+  $('catNewName').value=''; $('catNewPrice').value=''; $('catNewUnit').value='';
+});
+$('saveCatalogItemBtn')?.addEventListener('click', async()=>{
+  const nm=$('catNewName').value.trim(), pr=+$('catNewPrice').value||0, un=$('catNewUnit').value.trim();
+  if(!nm){ toast('Item naam zaroori hai'); return; }
+  if(catalog.find(c=>c.name.toLowerCase()===nm.toLowerCase())){ toast('Ye item already catalog mein hai'); return; }
+  catalog.push({id:'cat_'+Date.now().toString(36), name:nm, price:pr, unit:un});
+  await setData('catalog',catalog);
+  $('addCatalogForm').style.display='none';
+  $('catNewName').value=''; $('catNewPrice').value=''; $('catNewUnit').value='';
+  renderCatalog(); toast(`✅ "${nm}" catalog mein save hua!`);
+});
+$('discType').addEventListener('change',e=>{ const dv=$('discVal'); dv.disabled=e.target.value==='none'; if(e.target.value==='none') dv.value=''; renderTotals(); });
+$('discVal').addEventListener('input',renderTotals);
+$('amountPaid')?.addEventListener('input',renderTotals);
+$('clearBillBtn').addEventListener('click',()=>{
+  if(!confirm('Bill clear kar doon?')) return;
+  cart=[]; $('custName').value=''; $('custPhone').value=''; $('custGstAadhar').value='';
+  $('discType').value='none'; $('discVal').value=''; $('discVal').disabled=true;
+  $('amountPaid').value='';
+  billGstEnabled=true; updateGstToggleUI();
+  renderCart();
+});
+
+// ══ GENERATE BILL ══
+function nextBillNo(){
+  let mx=0; bills.forEach(b=>{ const m=String(b.billNo||'').match(/(\d+)$/); if(m) mx=Math.max(mx,+m[1]); });
+  return `DIV-${new Date().getFullYear().toString().slice(2)}-${String(mx+1).padStart(4,'0')}`;
+}
+
+$('genBillBtn').addEventListener('click', async()=>{
+  const custName=$('custName').value.trim()||'Walk-in Customer';
+  const custPhone=$('custPhone').value.trim();
+  const custGstAadhar=$('custGstAadhar').value.trim();
+  const addSig=$('addSigBox')?.checked||false;
+  const amountPaid=+($('amountPaid')?.value)||0;
+  const dt=$('discType').value, dv=+($('discVal').value)||0;
+  const sub=cart.reduce((s,it)=>s+it.qty*it.price,0);
+  let disc=0;
+  if(dt==='flat') disc=Math.min(dv,sub);
+  if(dt==='pct')  disc=sub*(Math.min(dv,100)/100);
+  const total=sub-disc;
+  const gr=+bizInfo.gstRate||0;
+  const showGst=billGstEnabled && gr>0;
+  const tax=showGst?total/(1+gr/100):total;
+  const gst=showGst?total-tax:0;
+  const bill={ id:uid(), billNo:nextBillNo(), date:new Date().toISOString(),
+    custName, custPhone, custGstAadhar, addSig,
+    items:cart.map(it=>({name:it.name,qty:it.qty,price:it.price,lineTotal:it.qty*it.price})),
+    sub, disc, discType:dt, discVal:dv, total, amountPaid,
+    taxableValue:showGst?tax:total, gstAmount:gst, gstRate:showGst?gr:0, gstEnabled:showGst };
+  bills.push(bill);
+  await setData('bills', bills);
+  cart=[]; $('custName').value=''; $('custPhone').value=''; $('custGstAadhar').value='';
+  $('discType').value='none'; $('discVal').value=''; $('discVal').disabled=true;
+  $('amountPaid').value='';
+  billGstEnabled=true; updateGstToggleUI();
+  renderCart(); toast('✅ Bill saved — '+bill.billNo); printBill(bill);
+});
+
+function printBill(bill){
+  const s=bizInfo;
+  const showGst = bill.gstEnabled && (bill.gstRate||0)>0;
+  const gr=bill.gstRate||0;
+  const cgst=showGst?(bill.gstAmount||0)/2:0;
+  const sgst=cgst;
+
+  // Logo HTML
+  const logoHtml = s.logo
+    ? `<img src="${s.logo}" style="height:60px;object-fit:contain;margin-bottom:4px;" alt="logo">`
+    : '';
+
+  const rows=(bill.items||[]).length
+    ? (bill.items||[]).map(it=>`
+    <tr>
+      <td style="padding:7px 10px;border-bottom:1px solid #eee">${esc(it.name)}</td>
+      <td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center">${it.qty}</td>
+      <td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:right">${fmtM(it.price)}</td>
+      <td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:right;font-weight:600">${fmtM(it.lineTotal||it.qty*it.price)}</td>
+    </tr>`).join('')
+    : `<tr><td colspan="4" style="padding:14px 10px;text-align:center;color:#999;font-style:italic;">— ${esc(bill.custName)} —</td></tr>`;
+
+  const discRow=(bill.disc||0)>0
+    ?`<tr><td colspan="3" style="text-align:right;padding:5px 10px;font-size:12px;color:#555">Discount</td><td style="text-align:right;padding:5px 10px;color:#B4432E">− ${fmtM(bill.disc)}</td></tr>`
+    :'';
+
+  const gstRows = showGst ? `
+    <tr><td colspan="3" style="text-align:right;padding:5px 10px;font-size:12px;color:#555">Taxable Value</td><td style="text-align:right;padding:5px 10px;font-size:12px">${fmtM(bill.taxableValue)}</td></tr>
+    <tr><td colspan="3" style="text-align:right;padding:5px 10px;font-size:12px;color:#555">CGST @${gr/2}%</td><td style="text-align:right;padding:5px 10px;font-size:12px">${fmtM(cgst)}</td></tr>
+    <tr><td colspan="3" style="text-align:right;padding:5px 10px;font-size:12px;color:#555">SGST @${gr/2}%</td><td style="text-align:right;padding:5px 10px;font-size:12px">${fmtM(sgst)}</td></tr>` : '';
+
+  // Customer details block
+  const custDetails = `
+    <div style="font-size:14px;font-weight:600">${esc(bill.custName)}</div>
+    ${bill.custPhone?`<div style="font-size:12px;color:#555;margin-top:2px">📱 ${esc(bill.custPhone)}</div>`:''}
+    ${bill.custGstAadhar?`<div style="font-size:12px;color:#555;margin-top:2px;font-family:monospace">🪪 ${esc(bill.custGstAadhar)}</div>`:''}`;
+
+  // Signature box
+  const sigBox = bill.addSig ? `
+    <div style="margin-top:28px;display:flex;justify-content:space-between;align-items:flex-end;">
+      <div style="text-align:center;width:45%;">
+        <div style="border-top:1.5px solid #333;padding-top:6px;font-size:11px;color:#555">Authorised Signature</div>
+      </div>
+      <div style="text-align:center;width:45%;">
+        <div style="height:48px;border:1px dashed #ccc;border-radius:4px;margin-bottom:6px;background:#fafafa;"></div>
+        <div style="border-top:1.5px solid #333;padding-top:6px;font-size:11px;color:#555">Customer Signature</div>
+      </div>
+    </div>` : '';
+
+  $('printArea').innerHTML=`
+  <div style="font-family:'Inter',sans-serif;padding:12mm 14mm;color:#000;max-width:210mm;">
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #333;padding-bottom:12px;margin-bottom:16px;">
+      <div>
+        ${logoHtml}
+        <div style="font-size:20px;font-weight:800;font-family:'Space Grotesk',sans-serif">${esc(s.name||'My Shop')}</div>
+        <div style="font-size:12px;color:#555;margin-top:3px">${esc(s.addr||'')}</div>
+        ${s.gstin?`<div style="font-size:11px;color:#777;margin-top:2px">GSTIN: ${esc(s.gstin)}</div>`:''}
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:20px;font-weight:700;color:#16233B">TAX INVOICE</div>
+        <div style="font-size:14px;font-weight:700;margin-top:4px;font-family:monospace">${esc(bill.billNo)}</div>
+        <div style="font-size:12px;color:#555;margin-top:2px">${fmtD(bill.date)}</div>
+        ${!showGst?`<div style="margin-top:4px;font-size:11px;background:#FFF3CD;padding:2px 8px;border-radius:4px;display:inline-block;color:#856404">No GST Applied</div>`:''}
+      </div>
+    </div>
+
+    <!-- Bill To -->
+    <div style="margin-bottom:14px;padding:10px 14px;background:#f9f9f9;border-radius:6px;border-left:3px solid #B8862F;">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:4px">Bill To</div>
+      ${custDetails}
+    </div>
+
+    <!-- Items Table -->
+    <table style="width:100%;border-collapse:collapse;margin-bottom:0">
+      <thead>
+        <tr style="background:#16233B;color:#fff">
+          <th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600">Item</th>
+          <th style="padding:8px 10px;text-align:center;font-size:12px;font-weight:600">Qty</th>
+          <th style="padding:8px 10px;text-align:right;font-size:12px;font-weight:600">Rate</th>
+          <th style="padding:8px 10px;text-align:right;font-size:12px;font-weight:600">Amount</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot style="border-top:1px solid #ccc">
+        ${discRow}
+        ${gstRows}
+        <tr style="border-top:2px solid #333;background:#f5f5f5">
+          <td colspan="3" style="text-align:right;padding:10px;font-weight:800;font-size:15px">TOTAL</td>
+          <td style="text-align:right;padding:10px;font-weight:800;font-size:15px">${fmtM(bill.total)}</td>
+        </tr>
+        ${(bill.amountPaid||0)>0 ? `
+        <tr style="background:#EAF4EE;">
+          <td colspan="3" style="text-align:right;padding:8px 10px;font-weight:700;font-size:13px;color:#2F6B4F;">💵 Amount Paid</td>
+          <td style="text-align:right;padding:8px 10px;font-weight:700;font-size:13px;color:#2F6B4F;">${fmtM(bill.amountPaid)}</td>
+        </tr>
+        <tr style="background:${bill.amountPaid>=bill.total?'#EAF4EE':'#FBEFEB'};">
+          <td colspan="3" style="text-align:right;padding:8px 10px;font-weight:800;font-size:14px;color:${bill.amountPaid>=bill.total?'#2F6B4F':'#B4432E'};">${bill.amountPaid>=bill.total?'✅ Change Return':'⚠️ Balance Due'}</td>
+          <td style="text-align:right;padding:8px 10px;font-weight:800;font-size:14px;color:${bill.amountPaid>=bill.total?'#2F6B4F':'#B4432E'};">${fmtM(Math.abs(bill.total - bill.amountPaid))}</td>
+        </tr>` : ''}
+      </tfoot>
+    </table>
+
+    <!-- Signature + Footer -->
+    ${sigBox}
+    <div style="text-align:center;font-size:11px;color:#aaa;border-top:1px solid #eee;padding-top:10px;margin-top:20px">
+      Thank you for your business! 🙏
+    </div>
+  </div>`;
+  window.print();
+}
+
+// ══ BILL HISTORY ══
+function renderHistory(){
+  const w=$('historyWrap'); if(!w) return;
+  const q=($('histSearch')?.value||'').toLowerCase().trim();
+  const df=$('histDateF')?.value||'';
+  const now=new Date(), todStr=today();
+  const filtered=[...bills].reverse().filter(b=>{
+    if(q && !((b.billNo||'').toLowerCase().includes(q)||(b.custName||b.customerName||'').toLowerCase().includes(q))) return false;
+    if(df){
+      const bd=new Date(b.date);
+      if(df==='today' && b.date.slice(0,10)!==todStr) return false;
+      if(df==='week'){ const wa=new Date(now); wa.setDate(now.getDate()-7); if(bd<wa) return false; }
+      if(df==='month' && (bd.getFullYear()!==now.getFullYear()||bd.getMonth()!==now.getMonth())) return false;
+    }
+    return true;
+  });
+  if(!filtered.length){ w.innerHTML='<div class="empty"><span class="g">📋</span><p>Koi bill nahi mila.</p></div>'; return; }
+  w.innerHTML=`<div class="tw"><table><thead><tr><th>Bill No</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Actions</th></tr></thead><tbody>`+
+    filtered.map(b=>`<tr>
+      <td class="mono" style="font-weight:700">${esc(b.billNo)}</td>
+      <td>${fmtD(b.date)}</td>
+      <td>${esc(b.custName||b.customerName||'Walk-in')}</td>
+      <td style="color:var(--ink-soft)">${(b.items||[]).length} item(s)</td>
+      <td style="font-weight:700">${fmtM(b.total)}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap;padding-top:8px;">
+        <button class="btn btn-ghost btn-sm hp" data-id="${b.id}" style="min-height:32px">🖨️ Print</button>
+        <button class="btn btn-danger btn-sm hd" data-id="${b.id}" style="min-height:32px">🗑️ Delete</button>
+      </td></tr>`).join('')+
+    '</tbody></table></div>';
+  w.querySelectorAll('.hp').forEach(btn=>btn.addEventListener('click',()=>{ const b=bills.find(x=>x.id===btn.dataset.id); if(b) printBill(b); }));
+  w.querySelectorAll('.hd').forEach(btn=>btn.addEventListener('click', async()=>{
+    const b=bills.find(x=>x.id===btn.dataset.id); if(!b) return;
+    const nm=b.custName||b.customerName||'Walk-in';
+    if(!confirm(`Bill "${b.billNo}" (${nm}) delete karein?\nYe permanently delete hoga.`)) return;
+    try{ const r=await fetch('/api/bills/'+b.id,{method:'DELETE'}); if(r.status===401){location.href='/';return;} }catch(e){}
+    bills=bills.filter(x=>x.id!==b.id);
+    await setData('bills',bills);
+    toast('🗑️ Deleted: '+b.billNo);
+    renderHistory(); renderSales();
+  }));
+}
+$('histSearch')?.addEventListener('input',renderHistory);
+$('histDateF')?.addEventListener('change',renderHistory);
+
+// ══ SALES ══
+function renderSales(){
+  const sel=$('salesYr'); if(!sel) return;
+  const yrs=Array.from(new Set(bills.map(b=>new Date(b.date).getFullYear()))).sort((a,b)=>b-a);
+  const cur=new Date().getFullYear(); if(!yrs.includes(cur)) yrs.unshift(cur);
+  const prev=sel.value;
+  sel.innerHTML='<option value="">All Years</option>'+yrs.map(y=>`<option value="${y}">${y}</option>`).join('');
+  if(prev) sel.value=prev; else sel.value=String(cur);
+
+  const yr=$('salesYr')?.value||'', mo=$('salesMo')?.value;
+  const fb=bills.filter(b=>{
+    const d=new Date(b.date);
+    if(yr && d.getFullYear()!==+yr) return false;
+    if(mo!==''&&mo!=null&&mo!==undefined && d.getMonth()!==+mo) return false;
+    return true;
+  });
+  const tot=fb.reduce((s,b)=>s+b.total,0), gst=fb.reduce((s,b)=>s+(b.gstAmount||0),0);
+  const sw=$('salesSumWrap');
+  if(sw) sw.innerHTML=`
+    <div style="flex:1;min-width:110px;border:1px solid var(--line);border-radius:10px;padding:14px"><div style="font-size:12px;color:var(--ink-soft)">Bills</div><div style="font-size:22px;font-weight:800">${fb.length}</div></div>
+    <div style="flex:1;min-width:140px;border:1px solid var(--line);border-radius:10px;padding:14px;background:#EAF4EE"><div style="font-size:12px;color:var(--ink-soft)">Total Sales</div><div style="font-size:22px;font-weight:800;color:var(--green)">${fmtM(tot)}</div></div>
+    <div style="flex:1;min-width:140px;border:1px solid var(--line);border-radius:10px;padding:14px"><div style="font-size:12px;color:var(--ink-soft)">GST Collected</div><div style="font-size:22px;font-weight:800">${fmtM(gst)}</div></div>
+    <div style="flex:1;min-width:140px;border:1px solid var(--line);border-radius:10px;padding:14px"><div style="font-size:12px;color:var(--ink-soft)">Avg per Bill</div><div style="font-size:22px;font-weight:800">${fb.length?fmtM(tot/fb.length):'₹0.00'}</div></div>`;
+  const bw=$('salesBillsWrap'); if(!bw) return;
+  if(!fb.length){ bw.innerHTML='<div class="empty"><span class="g">📊</span><p>Is period mein koi bill nahi.</p></div>'; return; }
+  bw.innerHTML=`<div class="tw"><table><thead><tr><th>Bill No</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>GST</th></tr></thead><tbody>`+
+    [...fb].reverse().map(b=>`<tr>
+      <td class="mono" style="font-weight:700">${esc(b.billNo)}</td><td>${fmtD(b.date)}</td>
+      <td>${esc(b.custName||b.customerName||'Walk-in')}</td>
+      <td style="color:var(--ink-soft)">${(b.items||[]).length}</td>
+      <td style="font-weight:700">${fmtM(b.total)}</td><td style="color:var(--ink-soft)">${fmtM(b.gstAmount||0)}</td></tr>`).join('')+
+    '</tbody></table></div>';
+}
+$('salesYr')?.addEventListener('change',renderSales);
+$('salesMo')?.addEventListener('change',renderSales);
+
+// ══ RPAY ══
+function renderRpay(){
+  const q=($('rpSearch')?.value||'').toLowerCase().trim();
+  const sf=$('rpStatusF')?.value||'all';
+  let tg=0,tr=0,ac=0;
+  rpay.forEach(r=>{ const c=+r.creditAmount||0, p=(r.payments||[]).reduce((s,x)=>s+(+x.amount||0),0); tg+=c; tr+=p; if(c-p>0.01) ac++; });
+  const tp=Math.max(0,tg-tr);
+  if($('rpTotalGiven'))   $('rpTotalGiven').textContent=fmtM(tg);
+  if($('rpTotalRec'))     $('rpTotalRec').textContent=fmtM(tr);
+  if($('rpTotalPend'))    $('rpTotalPend').textContent=fmtM(tp);
+  if($('rpActiveCount'))  $('rpActiveCount').textContent=ac;
+  const dl=$('rpSug');
+  if(dl){ dl.innerHTML=Array.from(new Set(rpay.map(r=>r.customerName).filter(Boolean))).sort().map(n=>`<option value="${esc(n)}">`).join(''); }
+  const fil=rpay.filter(r=>{
+    const p=(r.payments||[]).reduce((s,x)=>s+(+x.amount||0),0), rem=(+r.creditAmount||0)-p, set=rem<=0.01;
+    if(q && !(r.customerName||'').toLowerCase().includes(q) && !(r.customerPhone||'').includes(q)) return false;
+    if(sf==='pending'&&set) return false;
+    if(sf==='settled'&&!set) return false;
+    return true;
+  });
+  const w=$('rpListWrap'); if(!w) return;
+  if(!fil.length){ w.innerHTML='<div class="empty"><span class="g">💳</span><p>Koi udhar record nahi mila.</p></div>'; return; }
+  w.innerHTML=fil.map(r=>{
+    const cred=+r.creditAmount||0, pmts=r.payments||[];
+    const paid=pmts.reduce((s,p)=>s+(+p.amount||0),0), rem=Math.max(0,cred-paid);
+    const pct=cred>0?Math.min(100,Math.round(paid/cred*100)):0, set=rem<=0.01;
+    const badge=set?'<span class="badge bdg-grn">✅ Settled</span>':(paid>0?'<span class="badge bdg-blue">⏳ Partial</span>':'<span class="badge bdg-red">🔴 Pending</span>');
+    const wam=encodeURIComponent(`Namaste ${r.customerName} ji, ${bizInfo.name||'Shop'} se — aapka udhar ₹${cred.toFixed(2)} tha. Paid: ₹${paid.toFixed(2)}. Baaki: ₹${rem.toFixed(2)}. Dhanyawad!`);
+    const waUrl=r.customerPhone?`https://wa.me/91${(r.customerPhone||'').replace(/\D/g,'')}?text=${wam}`:`https://wa.me/?text=${wam}`;
+    return `<div style="border:1.5px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px;background:#fff;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <strong style="font-size:16px;font-family:'Space Grotesk',sans-serif">👤 ${esc(r.customerName)}</strong>${badge}${r.movedFromBadpay?'<span style="background:#E3F2FD;color:#1a5fa8;border-radius:4px;padding:1px 7px;font-size:10.5px;font-weight:700;margin-left:6px;">↩️ Badpay se moved</span>':''}
+          </div>
+          ${r.customerPhone?`<div style="font-size:12.5px;color:var(--ink-soft);margin-top:2px">📱 ${esc(r.customerPhone)}</div>`:''}
+          <div style="font-size:11.5px;color:var(--ink-soft);margin-top:2px">📅 ${fmtD(r.creditDate)}</div>
+        </div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;">
+          <a href="${waUrl}" target="_blank" class="btn btn-ghost btn-sm" style="color:#25D366;border-color:#25D366;text-decoration:none;min-height:32px">📱 WA</a>
+          ${!set?`<button class="btn btn-brass btn-sm" onclick="openRpPay('${r.id}')" style="min-height:32px">💵 Payment</button>`:''}
+          <button class="btn btn-ghost btn-sm" onclick="addExtraUd('${r.id}')" style="min-height:32px">+ Extra</button>
+          <button class="btn btn-sm rp-bad-btn" data-id="${r.id}" style="min-height:32px;background:#7B2D2D;color:#fff;border-color:#7B2D2D;" title="Badpay mein move karo">🚫 Bad+</button>
+          <button class="btn btn-danger btn-sm" onclick="delRp('${r.id}')" style="min-height:32px">🗑️</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;padding:12px;background:var(--paper);border-radius:8px;margin-bottom:10px;">
+        <div><div style="font-size:11px;color:var(--ink-soft);font-weight:700;text-transform:uppercase">Total Udhar</div><div style="font-size:16px;font-weight:700">${fmtM(cred)}</div></div>
+        <div><div style="font-size:11px;color:var(--ink-soft);font-weight:700;text-transform:uppercase">Received</div><div style="font-size:16px;font-weight:700;color:var(--green)">${fmtM(paid)}</div></div>
+        <div><div style="font-size:11px;color:var(--ink-soft);font-weight:700;text-transform:uppercase">Pending</div><div style="font-size:18px;font-weight:800;color:${set?'var(--green)':'var(--red)'}">${fmtM(rem)}</div></div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-soft);margin-bottom:4px"><span>Progress</span><span>${pct}% Paid</span></div>
+        <div style="height:8px;background:var(--line);border-radius:4px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${set?'var(--green)':'var(--brass)'};transition:width .3s"></div></div>
+      </div>
+      ${r.notes?`<div style="font-size:12.5px;color:var(--ink-soft);background:#FAF8F5;padding:8px 12px;border-radius:6px;margin-bottom:10px"><strong>Note:</strong> ${esc(r.notes)}</div>`:''}
+      <details style="border-top:1px dashed var(--line);padding-top:10px;">
+        <summary style="cursor:pointer;font-weight:600;color:var(--ink-soft);font-size:12.5px;user-select:none">📋 Payment Log (${pmts.length})</summary>
+        <div style="margin-top:8px;">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+            <button class="btn btn-ghost btn-sm rp-pdf-btn" data-id="${r.id}" style="min-height:28px;font-size:11.5px;gap:4px;">🖨️ PDF Export</button>
+          </div>
+          <div style="max-height:180px;overflow-y:auto"><table style="width:100%;font-size:12px">
+          <thead><tr style="background:var(--paper)"><th>Type</th><th>Date</th><th>Amount</th><th>Mode</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge bdg-red">+ Udhar</span></td><td>${fmtD(r.creditDate)}</td><td><strong>${fmtM(cred)}</strong></td><td>${esc(r.notes||'Credit')}</td></tr>
+            ${pmts.map(p=>`<tr><td><span class="badge bdg-grn">- Paid</span></td><td>${fmtD(p.date)}</td><td><strong style="color:var(--green)">${fmtM(p.amount)}</strong></td><td>${esc(p.mode||'Cash')}${p.notes?` (${esc(p.notes)})`:''}</td></tr>`).join('')}
+          </tbody></table></div>
+        </div>
+      </details>
+    </div>`;
+  }).join('');
+  // PDF export buttons for Rpay payment logs
+  w.querySelectorAll('.rp-pdf-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    const r=rpay.find(x=>x.id===btn.dataset.id); if(!r) return;
+    printPaymentLogPDF(r,'Rpay');
+  }));
+  // Bad+ buttons — move from Rpay to Badpay
+  w.querySelectorAll('.rp-bad-btn').forEach(btn=>btn.addEventListener('click', async()=>{
+    const r=rpay.find(x=>x.id===btn.dataset.id); if(!r) return;
+    const paid=(r.payments||[]).reduce((s,p)=>s+(+p.amount||0),0), rem=Math.max(0,(+r.creditAmount||0)-paid);
+    if(rem<=0.01){ toast('Ye already settled hai — Badpay mein dalne ki zaroorat nahi.'); return; }
+    if(!confirm(`"${r.customerName}" ko Badpay mein move karein?\nBaaki pending: ${fmtM(rem)}\n\nRpay se remove ho jayega.`)) return;
+    // Copy to badpay
+    badpay.unshift({
+      id:'bp_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+      customerName:r.customerName, customerPhone:r.customerPhone||'',
+      creditAmount:+r.creditAmount||0, creditDate:r.creditDate,
+      notes:(r.notes?r.notes+' ':'')+'[Moved from Rpay]',
+      payments:[...(r.payments||[])], status:'pending',
+      createdAt:new Date().toISOString(), movedFromRpay:true
+    });
+    // Remove from rpay
+    rpay=rpay.filter(x=>x.id!==r.id);
+    await Promise.all([setData('rpay',rpay), setData('badpay',badpay)]);
+    renderRpay(); renderBadpay();
+    toast(`🚫 "${r.customerName}" Badpay mein move ho gaya!`);
+  }));
+}
+
+function openRpPay(id){
+  const r=rpay.find(x=>x.id===id); if(!r) return;
+  activeRpId=id;
+  const paid=(r.payments||[]).reduce((s,p)=>s+(+p.amount||0),0), rem=Math.max(0,(+r.creditAmount||0)-paid);
+  const card=$('rpPayCard'); if(!card) return;
+  card.style.display='block'; card.scrollIntoView({behavior:'smooth',block:'center'});
+  $('rpPayHeader').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+    <div><strong style="font-size:15px">${esc(r.customerName)}</strong><div style="font-size:12px;color:var(--ink-soft)">Udhar: ${fmtM(r.creditAmount)} | Paid: ${fmtM(paid)}</div></div>
+    <div style="text-align:right"><div style="font-size:11px;color:var(--ink-soft);font-weight:700;text-transform:uppercase">Pending</div><div style="font-size:18px;font-weight:800;color:var(--red)">${fmtM(rem)}</div></div>
+  </div>`;
+  $('rpPayDate').value=today(); $('rpPayAmt').value=''; $('rpPayNote').value='';
+  $('rpPayPreview').innerHTML='<div style="font-size:12.5px;color:var(--ink-soft)">Amount likhein — pending live update hoga.</div>';
+}
+$('rpPayAmt')?.addEventListener('input',()=>{
+  if(!activeRpId) return;
+  const r=rpay.find(x=>x.id===activeRpId); if(!r) return;
+  const paid=(r.payments||[]).reduce((s,p)=>s+(+p.amount||0),0), rem=Math.max(0,(+r.creditAmount||0)-paid);
+  const en=+$('rpPayAmt').value||0, nw=Math.max(0,rem-en);
+  if(en>0) $('rpPayPreview').innerHTML=`<div style="padding:10px 14px;background:#EBF9F1;border:1px solid #79D69F;border-radius:8px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><span style="font-size:13px">After this payment:</span><span style="font-size:16px;font-weight:800;color:${nw===0?'var(--green)':'var(--ink)'}">${fmtM(rem)} − ${fmtM(en)} = ${fmtM(nw)}</span></div>`;
+});
+
+async function addExtraUd(id){
+  const r=rpay.find(x=>x.id===id); if(!r) return;
+  const amt=+prompt(`Extra udhar (₹) — ${r.customerName}`); if(!amt||amt<=0) return;
+  const note=prompt('Kisliye? (optional):')||'';
+  r.creditAmount+=amt; if(note) r.notes=r.notes?r.notes+' | '+note:note;
+  const p=(r.payments||[]).reduce((s,x)=>s+(+x.amount||0),0);
+  r.status=p>=r.creditAmount?'settled':'partially_paid';
+  await setData('rpay',rpay); renderRpay(); toast(`₹${amt} extra udhar for ${r.customerName}`);
+}
+async function delRp(id){
+  const r=rpay.find(x=>x.id===id); if(!r) return;
+  if(!confirm(`"${r.customerName}" ka record delete karein?`)) return;
+  rpay=rpay.filter(x=>x.id!==id); await setData('rpay',rpay); renderRpay(); toast('Udhar record deleted');
+}
+
+$('rpSearch')?.addEventListener('input',renderRpay);
+$('rpStatusF')?.addEventListener('change',renderRpay);
+$('openAddRpBtn')?.addEventListener('click',()=>{ $('addRpCard').style.display='block'; $('addRpCard').scrollIntoView({behavior:'smooth',block:'center'}); $('rpDate').value=today(); $('rpCustName').focus(); });
+$('cancelRpBtn')?.addEventListener('click',()=>{ $('addRpCard').style.display='none'; });
+$('saveRpBtn')?.addEventListener('click', async()=>{
+  const nm=$('rpCustName').value.trim(), ph=$('rpCustPhone').value.trim(), amt=+$('rpAmount').value||0, dt=$('rpDate').value||today(), no=$('rpNotes').value.trim();
+  if(!nm){ toast('Customer naam likhna zaroori hai'); return; }
+  if(amt<=0){ toast('Valid amount likhna zaroori hai'); return; }
+  const ex=rpay.find(x=>x.customerName.toLowerCase()===nm.toLowerCase());
+  if(ex){ ex.creditAmount+=amt; if(ph&&!ex.customerPhone) ex.customerPhone=ph; if(no) ex.notes=ex.notes?ex.notes+' | '+no:no;
+    const p=(ex.payments||[]).reduce((s,x)=>s+(+x.amount||0),0); ex.status=p>=ex.creditAmount?'settled':'partially_paid'; toast(`₹${amt} extra udhar for ${nm}`);
+  } else { rpay.unshift({id:uid(),customerName:nm,customerPhone:ph,creditAmount:amt,creditDate:dt,notes:no,payments:[],status:'pending',createdAt:new Date().toISOString()}); toast(`✅ Udhar saved for ${nm}`); }
+  await setData('rpay',rpay);
+  $('rpCustName').value=''; $('rpCustPhone').value=''; $('rpAmount').value=''; $('rpNotes').value='';
+  $('addRpCard').style.display='none'; renderRpay();
+});
+$('saveRpPayBtn')?.addEventListener('click', async()=>{
+  if(!activeRpId) return;
+  const r=rpay.find(x=>x.id===activeRpId); if(!r) return;
+  const dt=$('rpPayDate').value||today(), amt=+$('rpPayAmt').value||0, mode=$('rpPayMode').value, note=$('rpPayNote').value.trim();
+  if(amt<=0){ toast('Valid amount likhna zaroori hai'); return; }
+  if(!r.payments) r.payments=[];
+  r.payments.push({id:'pay_'+Date.now().toString(36),date:dt,amount:amt,mode,notes:note});
+  const tp=r.payments.reduce((s,p)=>s+(+p.amount||0),0); r.status=tp>=r.creditAmount?'settled':'partially_paid';
+  await setData('rpay',rpay); $('rpPayCard').style.display='none'; activeRpId=null;
+  renderRpay(); toast(`✅ Payment of ${fmtM(amt)} saved for ${r.customerName}`);
+});
+$('cancelRpPayBtn')?.addEventListener('click',()=>{ $('rpPayCard').style.display='none'; activeRpId=null; });
+
+// ══ PAYMENT LOG PDF ══
+function printPaymentLogPDF(r, source){
+  const cred=+r.creditAmount||0, pmts=r.payments||[];
+  const paid=pmts.reduce((s,p)=>s+(+p.amount||0),0), rem=Math.max(0,cred-paid);
+  const pct=cred>0?Math.min(100,Math.round(paid/cred*100)):0;
+  const set=rem<=0.01;
+  const statusColor=set?'#2F6B4F':'#B4432E';
+  const statusText=set?'✅ Settled':(paid>0?'⏳ Partially Paid':'🔴 Pending');
+  const rows=[
+    `<tr style="background:#FEF2F2"><td style="padding:8px 10px;"><span style="background:#FEF2F2;color:#B4432E;border:1px solid #F5B7B1;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;">+ Udhar Given</span></td><td style="padding:8px 10px;">${fmtD(r.creditDate)}</td><td style="padding:8px 10px;color:#B4432E;font-weight:700;">+ ${fmtM(cred)}</td><td style="padding:8px 10px;">—</td><td style="padding:8px 10px;color:#666;font-size:12px;">${esc(r.notes||'Credit')}</td></tr>`,
+    ...pmts.map(p=>`<tr><td style="padding:8px 10px;"><span style="background:#EAF7EE;color:#2F6B4F;border:1px solid #A9DFBF;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;">− Payment</span></td><td style="padding:8px 10px;">${fmtD(p.date)}</td><td style="padding:8px 10px;color:#2F6B4F;font-weight:700;">− ${fmtM(p.amount)}</td><td style="padding:8px 10px;">${esc(p.mode||'Cash')}</td><td style="padding:8px 10px;color:#666;font-size:12px;">${esc(p.notes||'')}</td></tr>`)
+  ].join('');
+  $('printArea').innerHTML=`
+  <div style="font-family:'Inter',sans-serif;padding:15mm 15mm 10mm;color:#16233B;max-width:700px;margin:0 auto;">
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #16233B;padding-bottom:14px;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-size:22px;font-weight:800;font-family:'Space Grotesk',sans-serif;">${esc(bizInfo.name||'My Shop')}</div>
+        ${bizInfo.addr?`<div style="font-size:12px;color:#555;margin-top:2px;">${esc(bizInfo.addr)}</div>`:''}
+        ${bizInfo.gstin?`<div style="font-size:11px;color:#777;margin-top:2px;">GSTIN: ${esc(bizInfo.gstin)}</div>`:''}
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:16px;font-weight:800;color:#B8862F;">PAYMENT LOG</div>
+        <div style="font-size:12px;color:#555;margin-top:3px;">Source: ${esc(source)}</div>
+        <div style="font-size:11px;color:#777;">Generated: ${fmtD(new Date().toISOString())}</div>
+      </div>
+    </div>
+    <!-- Customer Info -->
+    <div style="background:#F6F4EE;border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:20px;">
+      <div style="flex:1;min-width:160px;">
+        <div style="font-size:11px;color:#777;font-weight:700;text-transform:uppercase;letter-spacing:.04em;">Customer</div>
+        <div style="font-size:18px;font-weight:700;margin-top:3px;">${esc(r.customerName)}</div>
+        ${r.customerPhone?`<div style="font-size:12px;color:#555;margin-top:2px;">📱 ${esc(r.customerPhone)}</div>`:''}
+      </div>
+      <div style="text-align:center;min-width:100px;">
+        <div style="font-size:11px;color:#777;font-weight:700;text-transform:uppercase;letter-spacing:.04em;">Total Udhar</div>
+        <div style="font-size:20px;font-weight:800;color:#B4432E;margin-top:3px;">${fmtM(cred)}</div>
+      </div>
+      <div style="text-align:center;min-width:100px;">
+        <div style="font-size:11px;color:#777;font-weight:700;text-transform:uppercase;letter-spacing:.04em;">Total Paid</div>
+        <div style="font-size:20px;font-weight:800;color:#2F6B4F;margin-top:3px;">${fmtM(paid)}</div>
+      </div>
+      <div style="text-align:center;min-width:100px;">
+        <div style="font-size:11px;color:#777;font-weight:700;text-transform:uppercase;letter-spacing:.04em;">Pending</div>
+        <div style="font-size:20px;font-weight:800;color:${statusColor};margin-top:3px;">${fmtM(rem)}</div>
+        <div style="font-size:12px;font-weight:600;color:${statusColor};margin-top:2px;">${statusText}</div>
+      </div>
+    </div>
+    <!-- Progress bar -->
+    <div style="margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#777;margin-bottom:5px;"><span>Payment Progress</span><span>${pct}% Paid</span></div>
+      <div style="height:10px;background:#DCD6C7;border-radius:5px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:${set?'#2F6B4F':'#B8862F'};border-radius:5px;"></div></div>
+    </div>
+    <!-- Transactions Table -->
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="background:#16233B;color:#fff;">
+          <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;font-weight:600;">Type</th>
+          <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;font-weight:600;">Date</th>
+          <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;font-weight:600;">Amount</th>
+          <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;font-weight:600;">Mode</th>
+          <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;font-weight:600;">Note</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr style="background:#f5f5f5;border-top:2px solid #333;">
+          <td colspan="2" style="padding:10px;font-weight:800;text-align:right;">Balance Pending:</td>
+          <td colspan="3" style="padding:10px;font-weight:800;font-size:16px;color:${statusColor};">${fmtM(rem)}</td>
+        </tr>
+      </tfoot>
+    </table>
+    <div style="text-align:center;font-size:11px;color:#aaa;border-top:1px solid #eee;padding-top:10px;margin-top:24px;">
+      ${esc(bizInfo.name||'Div Manager')} — Payment Log • ${fmtD(new Date().toISOString())}
+    </div>
+  </div>`;
+  window.print();
+}
+
+// ══ BADPAY ══
+function renderBadpay(){
+  const q=($('bpSearch')?.value||'').toLowerCase().trim();
+  const sf=$('bpStatusF')?.value||'all';
+  let tg=0,tr=0,ac=0;
+  badpay.forEach(r=>{ const c=+r.creditAmount||0, p=(r.payments||[]).reduce((s,x)=>s+(+x.amount||0),0); tg+=c; tr+=p; if(c-p>0.01) ac++; });
+  const tp=Math.max(0,tg-tr);
+  if($('bpTotalGiven'))  $('bpTotalGiven').textContent=fmtM(tg);
+  if($('bpTotalRec'))    $('bpTotalRec').textContent=fmtM(tr);
+  if($('bpTotalPend'))   $('bpTotalPend').textContent=fmtM(tp);
+  if($('bpActiveCount')) $('bpActiveCount').textContent=ac;
+  const fil=badpay.filter(r=>{
+    const p=(r.payments||[]).reduce((s,x)=>s+(+x.amount||0),0), rem=(+r.creditAmount||0)-p, set=rem<=0.01;
+    if(q && !(r.customerName||'').toLowerCase().includes(q) && !(r.customerPhone||'').includes(q)) return false;
+    if(sf==='pending'&&set) return false;
+    if(sf==='settled'&&!set) return false;
+    return true;
+  });
+  const w=$('bpListWrap'); if(!w) return;
+  if(!fil.length){ w.innerHTML='<div class="empty"><span class="g">🚫</span><p>Koi defaulter record nahi.</p></div>'; return; }
+  w.innerHTML=fil.map(r=>{
+    const cred=+r.creditAmount||0, pmts=r.payments||[];
+    const paid=pmts.reduce((s,p)=>s+(+p.amount||0),0), rem=Math.max(0,cred-paid);
+    const pct=cred>0?Math.min(100,Math.round(paid/cred*100)):0, set=rem<=0.01;
+    const badge=set?'<span class="badge bdg-grn">✅ Settled</span>':(paid>0?'<span class="badge bdg-blue">⏳ Partial</span>':'<span class="badge bdg-red">🔴 Defaulter</span>');
+    const movedTag=r.movedFromRpay?'<span style="background:#F3E5F5;color:#7B2D8B;border-radius:4px;padding:1px 7px;font-size:10.5px;font-weight:700;margin-left:6px;">Rpay se moved</span>':'';
+    return `<div style="border:1.5px solid #E8A598;border-radius:12px;padding:16px;margin-bottom:16px;background:#FFF8F7;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <strong style="font-size:16px;font-family:'Space Grotesk',sans-serif">👤 ${esc(r.customerName)}</strong>${badge}${movedTag}
+          </div>
+          ${r.customerPhone?`<div style="font-size:12.5px;color:var(--ink-soft);margin-top:2px">📱 ${esc(r.customerPhone)}</div>`:''}
+          <div style="font-size:11.5px;color:var(--ink-soft);margin-top:2px">📅 Since: ${fmtD(r.creditDate)}</div>
+        </div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;">
+          ${!set?`<button class="btn btn-brass btn-sm" onclick="openBpPay('${r.id}')" style="min-height:32px">💵 Payment</button>`:''}
+          <button class="btn btn-ghost btn-sm" onclick="addExtraBp('${r.id}')" style="min-height:32px">+ Extra</button>
+          <button class="btn btn-sm bp-to-rpay-btn" data-id="${r.id}" style="min-height:32px;background:#1a5fa8;color:#fff;border-color:#1a5fa8;" title="Wapas Rpay mein move karo">↩️ Rpay</button>
+          <button class="btn btn-danger btn-sm" onclick="delBp('${r.id}')" style="min-height:32px">🗑️</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;padding:12px;background:#FEF0EC;border-radius:8px;margin-bottom:10px;">
+        <div><div style="font-size:11px;color:var(--ink-soft);font-weight:700;text-transform:uppercase">Total Udhar</div><div style="font-size:16px;font-weight:700;">${fmtM(cred)}</div></div>
+        <div><div style="font-size:11px;color:var(--ink-soft);font-weight:700;text-transform:uppercase">Received</div><div style="font-size:16px;font-weight:700;color:var(--green)">${fmtM(paid)}</div></div>
+        <div><div style="font-size:11px;color:var(--ink-soft);font-weight:700;text-transform:uppercase">Pending</div><div style="font-size:18px;font-weight:800;color:${set?'var(--green)':'#B4432E'}">${fmtM(rem)}</div></div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-soft);margin-bottom:4px"><span>Recovery</span><span>${pct}% Recovered</span></div>
+        <div style="height:8px;background:var(--line);border-radius:4px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${set?'var(--green)':'#B4432E'};transition:width .3s"></div></div>
+      </div>
+      ${r.notes?`<div style="font-size:12.5px;color:var(--ink-soft);background:#FAF0EE;padding:8px 12px;border-radius:6px;margin-bottom:10px"><strong>Note:</strong> ${esc(r.notes)}</div>`:''}
+      <details style="border-top:1px dashed #E8A598;padding-top:10px;">
+        <summary style="cursor:pointer;font-weight:600;color:var(--ink-soft);font-size:12.5px;user-select:none">📋 Payment Log (${pmts.length})</summary>
+        <div style="margin-top:8px;">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+            <button class="btn btn-ghost btn-sm bp-pdf-btn" data-id="${r.id}" style="min-height:28px;font-size:11.5px;gap:4px;">🖨️ PDF Export</button>
+          </div>
+          <div style="max-height:180px;overflow-y:auto"><table style="width:100%;font-size:12px">
+            <thead><tr style="background:var(--paper)"><th>Type</th><th>Date</th><th>Amount</th><th>Mode</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge bdg-red">+ Udhar</span></td><td>${fmtD(r.creditDate)}</td><td><strong>${fmtM(cred)}</strong></td><td>${esc(r.notes||'Credit')}</td></tr>
+              ${pmts.map(p=>`<tr><td><span class="badge bdg-grn">- Paid</span></td><td>${fmtD(p.date)}</td><td><strong style="color:var(--green)">${fmtM(p.amount)}</strong></td><td>${esc(p.mode||'Cash')}${p.notes?` (${esc(p.notes)})`:''}</td></tr>`).join('')}
+            </tbody></table></div>
+        </div>
+      </details>
+    </div>`;
+  }).join('');
+  // PDF export buttons for Badpay
+  w.querySelectorAll('.bp-pdf-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    const r=badpay.find(x=>x.id===btn.dataset.id); if(!r) return;
+    printPaymentLogPDF(r,'Badpay');
+  }));
+
+  // ↩️ Move Badpay → Rpay
+  w.querySelectorAll('.bp-to-rpay-btn').forEach(btn=>btn.addEventListener('click', async()=>{
+    const r=badpay.find(x=>x.id===btn.dataset.id); if(!r) return;
+    const paid=(r.payments||[]).reduce((s,p)=>s+(+p.amount||0),0);
+    const rem=Math.max(0,(+r.creditAmount||0)-paid);
+    if(!confirm(`"${r.customerName}" ko wapas Rpay mein move karein?\nPending: ${fmtM(rem)}\n\nBadpay se remove ho jayega.`)) return;
+    // Copy to rpay — existing Rpay entry mein merge karo agar same name hai
+    const existing=rpay.find(x=>x.customerName.toLowerCase()===r.customerName.toLowerCase());
+    if(existing){
+      // Existing Rpay entry mein extra credit add karo (sirf pending amount)
+      if(rem>0.01) existing.creditAmount+=rem;
+      if(r.customerPhone&&!existing.customerPhone) existing.customerPhone=r.customerPhone;
+      const prevNote=`[Moved from Badpay — original udhar ${fmtM(r.creditAmount)}, recovered ${fmtM(paid)}]`;
+      existing.notes=existing.notes?existing.notes+' | '+prevNote:prevNote;
+      const tp=(existing.payments||[]).reduce((s,p)=>s+(+p.amount||0),0);
+      existing.status=tp>=existing.creditAmount?'settled':(tp>0?'partially_paid':'pending');
+      toast(`↩️ Merged with existing Rpay entry for "${r.customerName}"`);
+    } else {
+      // Naya Rpay entry banao — payments history bhi saath le jao
+      rpay.unshift({
+        id: uid(),
+        customerName: r.customerName,
+        customerPhone: r.customerPhone||'',
+        creditAmount: +r.creditAmount||0,
+        creditDate: r.creditDate,
+        notes: (r.notes?r.notes+' ':'')+'[Moved from Badpay]',
+        payments: [...(r.payments||[])],
+        status: rem<=0.01?'settled':(paid>0?'partially_paid':'pending'),
+        createdAt: new Date().toISOString(),
+        movedFromBadpay: true
+      });
+      toast(`↩️ "${r.customerName}" wapas Rpay mein aa gaya!`);
+    }
+    // Badpay se remove karo
+    badpay=badpay.filter(x=>x.id!==r.id);
+    await Promise.all([setData('rpay',rpay), setData('badpay',badpay)]);
+    renderBadpay(); renderRpay();
+  }));
+}
+
+function openBpPay(id){
+  const r=badpay.find(x=>x.id===id); if(!r) return;
+  activeBpId=id;
+  const paid=(r.payments||[]).reduce((s,p)=>s+(+p.amount||0),0), rem=Math.max(0,(+r.creditAmount||0)-paid);
+  const card=$('bpPayCard'); if(!card) return;
+  card.style.display='block'; card.scrollIntoView({behavior:'smooth',block:'center'});
+  $('bpPayHeader').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+    <div><strong style="font-size:15px">${esc(r.customerName)}</strong><div style="font-size:12px;color:var(--ink-soft)">Udhar: ${fmtM(r.creditAmount)} | Paid: ${fmtM(paid)}</div></div>
+    <div style="text-align:right"><div style="font-size:11px;color:var(--ink-soft);font-weight:700;text-transform:uppercase">Pending</div><div style="font-size:18px;font-weight:800;color:#B4432E">${fmtM(rem)}</div></div>
+  </div>`;
+  $('bpPayDate').value=today(); $('bpPayAmt').value=''; $('bpPayNote').value='';
+  $('bpPayPreview').innerHTML='<div style="font-size:12.5px;color:var(--ink-soft)">Amount likhein — preview dikhayi dega.</div>';
+}
+$('bpPayAmt')?.addEventListener('input',()=>{
+  if(!activeBpId) return;
+  const r=badpay.find(x=>x.id===activeBpId); if(!r) return;
+  const paid=(r.payments||[]).reduce((s,p)=>s+(+p.amount||0),0), rem=Math.max(0,(+r.creditAmount||0)-paid);
+  const en=+$('bpPayAmt').value||0, nw=Math.max(0,rem-en);
+  if(en>0) $('bpPayPreview').innerHTML=`<div style="padding:10px 14px;background:#EBF9F1;border:1px solid #79D69F;border-radius:8px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><span style="font-size:13px">After this payment:</span><span style="font-size:16px;font-weight:800;color:${nw===0?'var(--green)':'var(--ink)'}">${fmtM(rem)} − ${fmtM(en)} = ${fmtM(nw)}</span></div>`;
+});
+
+async function addExtraBp(id){
+  const r=badpay.find(x=>x.id===id); if(!r) return;
+  const amt=+prompt(`Extra udhar (₹) — ${r.customerName}`); if(!amt||amt<=0) return;
+  const note=prompt('Kisliye? (optional):')||'';
+  r.creditAmount+=amt; if(note) r.notes=r.notes?r.notes+' | '+note:note;
+  const p=(r.payments||[]).reduce((s,x)=>s+(+x.amount||0),0);
+  r.status=p>=r.creditAmount?'settled':'pending';
+  await setData('badpay',badpay); renderBadpay(); toast(`₹${amt} extra added for ${r.customerName}`);
+}
+async function delBp(id){
+  const r=badpay.find(x=>x.id===id); if(!r) return;
+  if(!confirm(`"${r.customerName}" Badpay se delete karein?`)) return;
+  badpay=badpay.filter(x=>x.id!==id); await setData('badpay',badpay); renderBadpay(); toast('Badpay record deleted');
+}
+
+$('bpSearch')?.addEventListener('input',renderBadpay);
+$('bpStatusF')?.addEventListener('change',renderBadpay);
+$('openAddBpBtn')?.addEventListener('click',()=>{ $('addBpCard').style.display='block'; $('addBpCard').scrollIntoView({behavior:'smooth',block:'center'}); $('bpDate').value=today(); $('bpCustName').focus(); });
+$('cancelBpBtn')?.addEventListener('click',()=>{ $('addBpCard').style.display='none'; });
+$('saveBpBtn')?.addEventListener('click', async()=>{
+  const nm=$('bpCustName').value.trim(), ph=$('bpCustPhone').value.trim(), amt=+$('bpAmount').value||0, dt=$('bpDate').value||today(), no=$('bpNotes').value.trim();
+  if(!nm){ toast('Customer naam likhna zaroori hai'); return; }
+  if(amt<=0){ toast('Valid amount likhna zaroori hai'); return; }
+  const ex=badpay.find(x=>x.customerName.toLowerCase()===nm.toLowerCase());
+  if(ex){ ex.creditAmount+=amt; if(ph&&!ex.customerPhone) ex.customerPhone=ph; if(no) ex.notes=ex.notes?ex.notes+' | '+no:no;
+    const p=(ex.payments||[]).reduce((s,x)=>s+(+x.amount||0),0); ex.status=p>=ex.creditAmount?'settled':'pending'; toast(`₹${amt} extra for ${nm}`);
+  } else { badpay.unshift({id:'bp_'+uid(),customerName:nm,customerPhone:ph,creditAmount:amt,creditDate:dt,notes:no,payments:[],status:'pending',createdAt:new Date().toISOString()}); toast(`🚫 Defaulter saved: ${nm}`); }
+  await setData('badpay',badpay);
+  $('bpCustName').value=''; $('bpCustPhone').value=''; $('bpAmount').value=''; $('bpNotes').value='';
+  $('addBpCard').style.display='none'; renderBadpay();
+});
+$('saveBpPayBtn')?.addEventListener('click', async()=>{
+  if(!activeBpId) return;
+  const r=badpay.find(x=>x.id===activeBpId); if(!r) return;
+  const dt=$('bpPayDate').value||today(), amt=+$('bpPayAmt').value||0, mode=$('bpPayMode').value, note=$('bpPayNote').value.trim();
+  if(amt<=0){ toast('Valid amount likhna zaroori hai'); return; }
+  if(!r.payments) r.payments=[];
+  r.payments.push({id:'bpay_'+Date.now().toString(36),date:dt,amount:amt,mode,notes:note});
+  const tp=r.payments.reduce((s,p)=>s+(+p.amount||0),0); r.status=tp>=r.creditAmount?'settled':'pending';
+  await setData('badpay',badpay); $('bpPayCard').style.display='none'; activeBpId=null;
+  renderBadpay(); toast(`✅ Payment of ${fmtM(amt)} saved for ${r.customerName}`);
+});
+$('cancelBpPayBtn')?.addEventListener('click',()=>{ $('bpPayCard').style.display='none'; activeBpId=null; });
+
+// ══ SETTINGS ══
+function loadSettings(){
+  if($('setBizName'))  $('setBizName').value  = bizInfo.name||'';
+  if($('setBizAddr'))  $('setBizAddr').value  = bizInfo.addr||'';
+  if($('setBizGstin')) $('setBizGstin').value = bizInfo.gstin||'';
+  if($('setGstRate'))  $('setGstRate').value  = bizInfo.gstRate??3;
+  // Show existing logo if saved
+  if(bizInfo.logo){
+    const prev=$('logoPreview'), wrap=$('logoPreviewWrap'), rmBtn=$('removeLogoBtn');
+    if(prev) prev.src=bizInfo.logo;
+    if(wrap) wrap.style.display='block';
+    if(rmBtn) rmBtn.style.display='inline-flex';
+  }
+  checkDb();
+}
+
+// Logo upload
+$('logoUploadInput')?.addEventListener('change', e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    bizInfo.logo=ev.target.result;
+    const prev=$('logoPreview'), wrap=$('logoPreviewWrap'), rmBtn=$('removeLogoBtn');
+    if(prev){ prev.src=bizInfo.logo; }
+    if(wrap) wrap.style.display='block';
+    if(rmBtn) rmBtn.style.display='inline-flex';
+    toast('Logo uploaded! Save settings to apply.');
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+});
+
+// Remove logo
+$('removeLogoBtn')?.addEventListener('click',()=>{
+  bizInfo.logo='';
+  const wrap=$('logoPreviewWrap'), rmBtn=$('removeLogoBtn');
+  if(wrap) wrap.style.display='none';
+  if(rmBtn) rmBtn.style.display='none';
+  toast('Logo removed. Save settings to apply.');
+});
+$('saveSettBtn')?.addEventListener('click', async()=>{
+  bizInfo.name    = $('setBizName').value.trim()||'My Shop';
+  bizInfo.addr    = $('setBizAddr').value.trim();
+  bizInfo.gstin   = $('setBizGstin').value.trim();
+  bizInfo.gstRate = +$('setGstRate').value ?? 0;
+  // logo already updated live in bizInfo from upload handler
+  await setData('bizInfo',bizInfo); toast('✅ Settings saved!');
+});
+
+// ══ EXPORT FUNCTIONS ══
+function downloadFile(filename, content, type='application/json'){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type}));
+  a.download=filename; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function toCSV(rows, headers){
+  const csvEsc=v=>{ const s=String(v??''); return s.includes(',')||s.includes('"')||s.includes('\n')?`"${s.replace(/"/g,'""')}"`:s; };
+  return [headers.join(','), ...rows.map(r=>headers.map(h=>csvEsc(r[h])).join(','))].join('\n');
+}
+
+// Full JSON Backup (bills + rpay + bizInfo)
+$('expJsonBtn')?.addEventListener('click',()=>{
+  const data={ bills, rpay, badpay, catalog, bizInfo, exportedAt:new Date().toISOString(), version:'1.0' };
+  downloadFile(`div-backup-${today()}.json`, JSON.stringify(data,null,2));
+  toast('📥 Full backup downloaded!');
+});
+
+// Bills CSV
+$('expBillsCsvBtn')?.addEventListener('click',()=>{
+  if(!bills.length){ toast('Koi bill nahi hai export karne ke liye'); return; }
+  const rows=bills.map(b=>({
+    'Bill No':b.billNo||'',
+    'Date':fmtD(b.date),
+    'Customer':b.custName||b.customerName||'Walk-in',
+    'Phone':b.custPhone||b.customerPhone||'',
+    'Items':( b.items||[]).map(it=>`${it.name}×${it.qty}`).join(' | '),
+    'Subtotal':+(b.sub||b.subtotal||0).toFixed(2),
+    'Discount':+(b.disc||b.discount||0).toFixed(2),
+    'Total':+(b.total||0).toFixed(2),
+    'GST':+(b.gstAmount||0).toFixed(2),
+    'Taxable Value':+(b.taxableValue||0).toFixed(2)
+  }));
+  const csv=toCSV(rows,['Bill No','Date','Customer','Phone','Items','Subtotal','Discount','Total','GST','Taxable Value']);
+  downloadFile(`div-bills-${today()}.csv`,csv,'text/csv');
+  toast('📊 Bills CSV downloaded!');
+});
+
+// Rpay CSV
+$('expRpayCsvBtn')?.addEventListener('click',()=>{
+  if(!rpay.length){ toast('Koi udhar record nahi hai'); return; }
+  const rows=[];
+  rpay.forEach(r=>{
+    const paid=(r.payments||[]).reduce((s,p)=>s+(+p.amount||0),0);
+    rows.push({
+      'Customer':r.customerName||'',
+      'Phone':r.customerPhone||'',
+      'Udhar Date':fmtD(r.creditDate),
+      'Total Udhar':+(+r.creditAmount||0).toFixed(2),
+      'Total Paid':+paid.toFixed(2),
+      'Pending':+Math.max(0,(+r.creditAmount||0)-paid).toFixed(2),
+      'Status':r.status||'pending',
+      'Notes':r.notes||'',
+      'Payments Count':(r.payments||[]).length
+    });
+  });
+  const csv=toCSV(rows,['Customer','Phone','Udhar Date','Total Udhar','Total Paid','Pending','Status','Notes','Payments Count']);
+  downloadFile(`div-rpay-${today()}.csv`,csv,'text/csv');
+  toast('💰 Rpay CSV downloaded!');
+});
+
+// Bills PDF (print-friendly HTML report)
+$('expBillsPdfBtn')?.addEventListener('click',()=>{
+  if(!bills.length){ toast('Koi bill nahi hai'); return; }
+  const rows=[...bills].reverse().map(b=>`
+    <tr style="border-bottom:1px solid #eee">
+      <td style="padding:8px 10px;font-family:monospace;font-weight:700">${esc(b.billNo)}</td>
+      <td style="padding:8px 10px">${fmtD(b.date)}</td>
+      <td style="padding:8px 10px">${esc(b.custName||b.customerName||'Walk-in')}</td>
+      <td style="padding:8px 10px">${(b.items||[]).length}</td>
+      <td style="padding:8px 10px;font-weight:700">${fmtM(b.total)}</td>
+      <td style="padding:8px 10px;color:#666">${fmtM(b.gstAmount||0)}</td>
+    </tr>`).join('');
+  const total=bills.reduce((s,b)=>s+b.total,0);
+  $('printArea').innerHTML=`<div style="font-family:'Inter',sans-serif;padding:15mm;color:#000">
+    <div style="display:flex;justify-content:space-between;border-bottom:2px solid #333;padding-bottom:12px;margin-bottom:20px">
+      <div><div style="font-size:20px;font-weight:800">${esc(bizInfo.name||'My Shop')}</div><div style="font-size:12px;color:#555">${esc(bizInfo.addr||'')}</div></div>
+      <div style="text-align:right"><div style="font-size:18px;font-weight:700">BILLS REPORT</div><div style="font-size:12px;color:#555">Generated: ${fmtD(new Date().toISOString())}</div><div style="font-size:12px;color:#555">Total Bills: ${bills.length}</div></div>
+    </div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="background:#f5f5f5"><th style="padding:8px 10px;text-align:left;font-size:11px;text-transform:uppercase">Bill No</th><th style="padding:8px 10px;text-align:left;font-size:11px;text-transform:uppercase">Date</th><th style="padding:8px 10px;text-align:left;font-size:11px;text-transform:uppercase">Customer</th><th style="padding:8px 10px;text-align:left;font-size:11px;text-transform:uppercase">Items</th><th style="padding:8px 10px;text-align:left;font-size:11px;text-transform:uppercase">Total</th><th style="padding:8px 10px;text-align:left;font-size:11px;text-transform:uppercase">GST</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="text-align:right;margin-top:16px;padding-top:12px;border-top:2px solid #333;font-size:16px;font-weight:800">Grand Total: ${fmtM(total)}</div>
+  </div>`;
+  window.print(); toast('🖨️ Print/Save as PDF');
+});
+
+// Import JSON Backup
+$('impJsonBtn')?.addEventListener('click',()=>$('impJsonInput').click());
+$('impJsonInput')?.addEventListener('change', async e=>{
+  const file=e.target.files[0]; if(!file) return;
+  try{
+    const data=JSON.parse(await file.text());
+    if(!confirm('Import karega — current data overwrite ho jayega. Sure ho?')) return;
+    if(Array.isArray(data.bills))  { bills=data.bills;   await setData('bills',bills); }
+    if(Array.isArray(data.rpay))   { rpay=data.rpay;     await setData('rpay',rpay); }
+    if(Array.isArray(data.badpay)) { badpay=data.badpay; await setData('badpay',badpay); }
+    if(Array.isArray(data.catalog)){ catalog=data.catalog; await setData('catalog',catalog); }
+    if(data.bizInfo&&typeof data.bizInfo==='object'){ bizInfo=data.bizInfo; await setData('bizInfo',bizInfo); }
+    toast('✅ Backup restored!'); renderHistory(); renderSales(); renderRpay(); renderBadpay(); loadSettings();
+  }catch(err){ toast('❌ Invalid backup file'); console.error(err); }
+  e.target.value='';
+});
+
+// ══ MIGRATION EXPORTS ══
+
+// Helper: UTF-8 BOM CSV (Excel Hindi text ke liye)
+function downloadUTF8CSV(filename, csvContent){
+  const BOM = '\uFEFF'; // Excel UTF-8 BOM
+  downloadFile(filename, BOM + csvContent, 'text/csv;charset=utf-8');
+}
+
+// 1. Bills Excel (UTF-8 BOM) — Marg/Vyapar compatible
+$('migBillsExcelBtn')?.addEventListener('click',()=>{
+  if(!bills.length){ toast('Koi bill nahi hai'); return; }
+  const rows=bills.map(b=>({
+    'Bill No':       b.billNo||'',
+    'Date':          (b.date||'').slice(0,10),
+    'Customer Name': b.custName||b.customerName||'Walk-in',
+    'Phone':         b.custPhone||b.customerPhone||'',
+    'Items':         (b.items||[]).map(it=>`${it.name} x${it.qty}`).join('; '),
+    'Subtotal':      +(b.sub||0).toFixed(2),
+    'Discount':      +(b.disc||0).toFixed(2),
+    'GST Amount':    +(b.gstAmount||0).toFixed(2),
+    'GST Rate %':    b.gstRate||0,
+    'Taxable Value': +(b.taxableValue||0).toFixed(2),
+    'Total':         +(b.total||0).toFixed(2),
+    'Amount Paid':   +(b.amountPaid||0).toFixed(2),
+    'Balance Due':   +Math.max(0,(b.total||0)-(b.amountPaid||0)).toFixed(2),
+    'GSTIN':         b.custGstAadhar||''
+  }));
+  const csv=toCSV(rows,['Bill No','Date','Customer Name','Phone','Items','Subtotal','Discount','GST Amount','GST Rate %','Taxable Value','Total','Amount Paid','Balance Due','GSTIN']);
+  downloadUTF8CSV(`div-bills-migration-${today()}.csv`, csv);
+  toast('📊 Bills Excel CSV downloaded!');
+});
+
+// 2. Bills Detail CSV — ek row per item (accounting detail ke liye)
+$('migBillsDetailBtn')?.addEventListener('click',()=>{
+  if(!bills.length){ toast('Koi bill nahi hai'); return; }
+  const rows=[];
+  bills.forEach(b=>{
+    const itemList=b.items||[];
+    if(!itemList.length){
+      rows.push({
+        'Bill No':b.billNo||'','Date':(b.date||'').slice(0,10),
+        'Customer':b.custName||b.customerName||'Walk-in','Phone':b.custPhone||b.customerPhone||'',
+        'Item Name':'—','Qty':0,'Rate':0,'Line Total':0,
+        'Bill Total':+(b.total||0).toFixed(2),'GST':+(b.gstAmount||0).toFixed(2)
+      });
+    } else {
+      itemList.forEach(it=>{
+        rows.push({
+          'Bill No':b.billNo||'','Date':(b.date||'').slice(0,10),
+          'Customer':b.custName||b.customerName||'Walk-in','Phone':b.custPhone||b.customerPhone||'',
+          'Item Name':it.name||'','Qty':it.qty||0,'Rate':+(it.price||0).toFixed(2),'Line Total':+(it.lineTotal||0).toFixed(2),
+          'Bill Total':+(b.total||0).toFixed(2),'GST':+(b.gstAmount||0).toFixed(2)
+        });
+      });
+    }
+  });
+  const csv=toCSV(rows,['Bill No','Date','Customer','Phone','Item Name','Qty','Rate','Line Total','Bill Total','GST']);
+  downloadUTF8CSV(`div-bills-itemwise-${today()}.csv`, csv);
+  toast('📋 Item-wise Bills CSV downloaded!');
+});
+
+// 3. Rpay Excel (UTF-8 BOM)
+$('migRpayExcelBtn')?.addEventListener('click',()=>{
+  if(!rpay.length){ toast('Koi udhar record nahi hai'); return; }
+  const rows=rpay.map(r=>{
+    const paid=(r.payments||[]).reduce((s,p)=>s+(+p.amount||0),0);
+    const rem=Math.max(0,(+r.creditAmount||0)-paid);
+    return {
+      'Customer Name': r.customerName||'',
+      'Phone':         r.customerPhone||'',
+      'Udhar Date':    (r.creditDate||'').slice(0,10),
+      'Total Udhar':   +(+r.creditAmount||0).toFixed(2),
+      'Total Paid':    +paid.toFixed(2),
+      'Balance Pending':+rem.toFixed(2),
+      'Status':        rem<=0.01?'Settled':(paid>0?'Partial':'Pending'),
+      'Notes':         r.notes||'',
+      'Payments Count':(r.payments||[]).length,
+      'Created At':    (r.createdAt||r.creditDate||'').slice(0,10)
+    };
+  });
+  const csv=toCSV(rows,['Customer Name','Phone','Udhar Date','Total Udhar','Total Paid','Balance Pending','Status','Notes','Payments Count','Created At']);
+  downloadUTF8CSV(`div-rpay-migration-${today()}.csv`, csv);
+  toast('📊 Rpay Excel CSV downloaded!');
+});
+
+// 4. Rpay Payment Transactions — har payment alag row mein
+$('migRpayPaymentsBtn')?.addEventListener('click',()=>{
+  if(!rpay.length){ toast('Koi udhar record nahi hai'); return; }
+  const rows=[];
+  rpay.forEach(r=>{
+    // Credit entry
+    rows.push({
+      'Type':'Udhar Given','Customer':r.customerName||'','Phone':r.customerPhone||'',
+      'Date':(r.creditDate||'').slice(0,10),'Amount':+(+r.creditAmount||0).toFixed(2),
+      'Mode':'Credit','Reference':'','Note':r.notes||''
+    });
+    // Payment entries
+    (r.payments||[]).forEach(p=>{
+      rows.push({
+        'Type':'Payment Received','Customer':r.customerName||'','Phone':r.customerPhone||'',
+        'Date':(p.date||'').slice(0,10),'Amount':+(+p.amount||0).toFixed(2),
+        'Mode':p.mode||'Cash','Reference':p.notes||'','Note':''
+      });
+    });
+  });
+  const csv=toCSV(rows,['Type','Customer','Phone','Date','Amount','Mode','Reference','Note']);
+  downloadUTF8CSV(`div-rpay-transactions-${today()}.csv`, csv);
+  toast('📋 Rpay transactions CSV downloaded!');
+});
+
+// 5. Badpay Excel (UTF-8 BOM)
+$('migBadpayExcelBtn')?.addEventListener('click',()=>{
+  if(!badpay.length){ toast('Koi badpay record nahi hai'); return; }
+  const rows=badpay.map(r=>{
+    const paid=(r.payments||[]).reduce((s,p)=>s+(+p.amount||0),0);
+    const rem=Math.max(0,(+r.creditAmount||0)-paid);
+    return {
+      'Customer Name': r.customerName||'',
+      'Phone':         r.customerPhone||'',
+      'Since Date':    (r.creditDate||'').slice(0,10),
+      'Total Udhar':   +(+r.creditAmount||0).toFixed(2),
+      'Recovered':     +paid.toFixed(2),
+      'Still Pending': +rem.toFixed(2),
+      'Status':        rem<=0.01?'Settled':'Defaulter',
+      'Notes':         r.notes||'',
+      'Moved From Rpay': r.movedFromRpay?'Yes':'No'
+    };
+  });
+  const csv=toCSV(rows,['Customer Name','Phone','Since Date','Total Udhar','Recovered','Still Pending','Status','Notes','Moved From Rpay']);
+  downloadUTF8CSV(`div-badpay-migration-${today()}.csv`, csv);
+  toast('📊 Badpay Excel CSV downloaded!');
+});
+
+// 6. Badpay Transactions CSV
+$('migBadpayPaymentsBtn')?.addEventListener('click',()=>{
+  if(!badpay.length){ toast('Koi badpay record nahi hai'); return; }
+  const rows=[];
+  badpay.forEach(r=>{
+    rows.push({
+      'Type':'Udhar Given','Customer':r.customerName||'','Phone':r.customerPhone||'',
+      'Date':(r.creditDate||'').slice(0,10),'Amount':+(+r.creditAmount||0).toFixed(2),
+      'Mode':'Credit','Reference':'','Note':r.notes||''
+    });
+    (r.payments||[]).forEach(p=>{
+      rows.push({
+        'Type':'Payment Received','Customer':r.customerName||'','Phone':r.customerPhone||'',
+        'Date':(p.date||'').slice(0,10),'Amount':+(+p.amount||0).toFixed(2),
+        'Mode':p.mode||'Cash','Reference':p.notes||'','Note':''
+      });
+    });
+  });
+  const csv=toCSV(rows,['Type','Customer','Phone','Date','Amount','Mode','Reference','Note']);
+  downloadUTF8CSV(`div-badpay-transactions-${today()}.csv`, csv);
+  toast('📋 Badpay transactions CSV downloaded!');
+});
+
+// 7. Catalog CSV
+$('migCatalogBtn')?.addEventListener('click',()=>{
+  if(!catalog.length){ toast('Catalog mein koi item nahi hai'); return; }
+  const rows=catalog.map(c=>({ 'Item Name':c.name||'', 'Default Price':+(c.price||0).toFixed(2), 'Unit':c.unit||'' }));
+  const csv=toCSV(rows,['Item Name','Default Price','Unit']);
+  downloadUTF8CSV(`div-catalog-${today()}.csv`, csv);
+  toast('📋 Catalog CSV downloaded!');
+});
+
+// 8. Copy full JSON to clipboard
+$('migCopyJsonBtn')?.addEventListener('click', async()=>{
+  try{
+    const data={ bills, rpay, badpay, catalog, bizInfo, exportedAt:new Date().toISOString(), version:'1.0' };
+    await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+    toast('✅ Full data JSON clipboard mein copy ho gaya!');
+  }catch(e){
+    // Fallback: download
+    const data={ bills, rpay, badpay, catalog, bizInfo, exportedAt:new Date().toISOString(), version:'1.0' };
+    downloadFile(`div-clipboard-backup-${today()}.json`, JSON.stringify(data,null,2));
+    toast('📋 Clipboard nahi mila — JSON file download kar di!');
+  }
+});
+
+// ══ INIT ══
+(async function init(){
+  // Auth check first
+  try{
+    const a=await(await fetch('/api/auth-status')).json();
+    if(!a.authenticated){ location.href='/'; return; }
+  }catch(e){ console.warn('Auth check failed'); }
+
+  checkDb(); setInterval(checkDb,15000);
+
+  try{
+    const j=await apiGet('/api/all-data');
+    const d=j.data||{};
+    bills  =Array.isArray(d.bills)  ?d.bills  :[];
+    rpay   =Array.isArray(d.rpay)   ?d.rpay   :[];
+    badpay =Array.isArray(d.badpay) ?d.badpay :[];
+    catalog=Array.isArray(d.catalog)?d.catalog:[];
+    bizInfo=(d.bizInfo&&typeof d.bizInfo==='object')?d.bizInfo:{name:'My Shop',addr:'',gstin:'',gstRate:3};
+  }catch(e){
+    if(e.message==='401') return;
+    console.warn('Init load failed:',e.message);
+  }
+
+  if(bizInfo.gstRate===undefined||bizInfo.gstRate===null) bizInfo.gstRate=3;
+  if(bizInfo.gstin===undefined) bizInfo.gstin='';
+
+  renderCart();
+
+  // Responsive billing grid
+  const fix=()=>{ const g=$('billingGrid'); if(g) g.style.gridTemplateColumns=window.innerWidth<=768?'1fr':'1.3fr 1fr'; };
+  fix(); window.addEventListener('resize',fix);
+})();
+
+// ══ PWA — Service Worker Registration ══
+(function initPWA(){
+  // ── 1. Install prompt (beforeinstallprompt) ───────────────────────────────
+  let deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show our install button only when prompt is available
+    const btn = $('pwaInstallBtn');
+    if (btn) btn.style.display = 'flex';
+    // Hide manual instructions (prompt is available)
+    const mw = $('pwaManualWrap');
+    if (mw) mw.style.display = 'none';
+  });
+
+  $('pwaInstallBtn')?.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    const btn = $('pwaInstallBtn');
+    const msg = $('pwaInstalledMsg');
+    if (outcome === 'accepted') {
+      if (btn) btn.style.display = 'none';
+      if (msg) msg.style.display = 'block';
+      toast('✅ App install ho gayi! Home screen pe dekho.');
+    }
+  });
+
+  // ── 2. Already installed (standalone mode) ────────────────────────────────
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
+  if (isStandalone) {
+    const btn = $('pwaInstallBtn');
+    const msg = $('pwaInstalledMsg');
+    const mw  = $('pwaManualWrap');
+    if (btn) btn.style.display = 'none';
+    if (msg) msg.style.display = 'block';
+    if (mw)  mw.style.display  = 'none';
+  }
+
+  // ── 3. appinstalled event ─────────────────────────────────────────────────
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    const btn = $('pwaInstallBtn');
+    const msg = $('pwaInstalledMsg');
+    if (btn) btn.style.display = 'none';
+    if (msg) msg.style.display = 'block';
+    toast('🎉 Div Manager install ho gaya!');
+  });
+
+  // ── 4. Manual instructions fallback (when prompt never fires) ────────────
+  // Show after 2s — agar prompt nahi aaya tab manual instructions dikhao
+  setTimeout(() => {
+    if (deferredPrompt || isStandalone) return; // prompt available ya already installed
+    const mw = $('pwaManualWrap');
+    const btn = $('pwaInstallBtn');
+    if (!mw || !btn) return;
+    // Only show if install btn is still hidden (prompt never came)
+    if (btn.style.display === 'none' || btn.style.display === '') {
+      mw.style.display = 'block';
+      // Detect platform for specific instructions
+      const ua = navigator.userAgent.toLowerCase();
+      const isIos = /ipad|iphone|ipod/.test(ua) && !window.MSStream;
+      const isAndroid = /android/.test(ua);
+      if (isIos)          { $('pwaManualIos')?.style     && ($('pwaManualIos').style.display     = 'block'); }
+      else if (isAndroid) { $('pwaManualAndroid')?.style  && ($('pwaManualAndroid').style.display  = 'block'); }
+      else                { $('pwaManualDesktop')?.style  && ($('pwaManualDesktop').style.display  = 'block'); }
+    }
+  }, 2000);
+
+  // ── 5. Service Worker register ────────────────────────────────────────────
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => {
+        console.log('[SW] Registered — scope:', reg.scope);
+        // Check for updates every time app gains focus
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') reg.update();
+        });
+      })
+      .catch(err => console.warn('[SW] Registration failed:', err));
+  }
+})();
+</script>
+</body>
+</html>
